@@ -5,6 +5,9 @@ from functools import partial
 from TicTacToe import TicTacToe
 
 
+# TODO: desacoplar lógica de criação de layout desta classe
+
+
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
