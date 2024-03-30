@@ -19,8 +19,8 @@ class App(tk.Tk):
 
     def initialize_board(self):
         for i, line in enumerate(self.tic_tac_toe.board):
-            for j, element in enumerate(line):
-                button = tk.Button(self, text=element, font=('Arial', 20), height=2, width=4)
+            for j, position in enumerate(line):
+                button = tk.Button(self, text=position.get_value(), font=('Arial', 20), height=2, width=4)
                 button.config(command=partial(self.on_click, i, j, button))
                 button.grid(row=i, column=j)
 
@@ -30,10 +30,10 @@ class App(tk.Tk):
 
 
     def on_click(self, i, j, button):
-        self.tic_tac_toe.board[i][j] = self.current_player
+        self.tic_tac_toe.board[i][j].set_value(self.current_player)
         button.config(text=self.current_player)
 
-        if self.tic_tac_toe.checkWinner():
+        if self.tic_tac_toe.check_winner():
             print(f"Player {self.current_player} won", self.current_player)
 
         self.switch_player()

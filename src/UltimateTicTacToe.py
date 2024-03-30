@@ -1,12 +1,14 @@
 
-from ITicTacToe import ITicTacToe
+from ITicTacToe import ITicTacToe, SIZE
 from TicTacToe import TicTacToe
 
 
 class UltimateTicTacToe(ITicTacToe):
     def __init__(self) -> None:
-        pass
+        super().__init__()
 
-    
-    def checkWinner(self):
-        pass
+
+    def initialize_board(self):
+        for i in range(SIZE):
+            for j in range(SIZE):
+                self.board[i][j] = TicTacToe()
