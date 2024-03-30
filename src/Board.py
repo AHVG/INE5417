@@ -1,20 +1,19 @@
-from abc import ABC, abstractmethod
+from IPosition import IPosition, Position
 
 # TOOD: Encapsular isso
 SIZE = 3
 
 
-class ITicTacToe(ABC):
-    def __init__(self) -> None:
+class Board(IPosition):
+    def __init__(self, position_type=Position) -> None:
         self.winner = None
         self.board = None
 
-        self.initialize_board()
+        self.initialize_board(position_type)
 
 
-    @abstractmethod
-    def initialize_board(self):
-        pass
+    def initialize_board(self, position_type):
+        self.board = [[position_type() for _ in range(0, SIZE)] for _ in range(0, SIZE)]
 
 
     def get_lines(self):
@@ -27,6 +26,14 @@ class ITicTacToe(ABC):
 
     def get_diagonals(self):
         return [[self.board[i][i] for i in range(SIZE)], [self.board[j][i] for j, i in zip(list(range(SIZE)), list(range(SIZE - 1, -1, -1)))]]
+
+
+    def get_value(self):
+        return self.winner
+
+
+    def set_value(self, new_value):
+        self.winner = new_value
 
 
     def check_winner(self):
