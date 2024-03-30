@@ -9,6 +9,4 @@ class UltimateTicTacToe(ITicTacToe):
 
 
     def initialize_board(self):
-        for i in range(SIZE):
-            for j in range(SIZE):
-                self.board[i][j] = TicTacToe()
+        self.board = [[TicTacToe() for _ in range(0, SIZE)] for _ in range(0, SIZE)]
