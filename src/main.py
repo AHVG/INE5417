@@ -1,7 +1,8 @@
-
+from Interface import App
 
 def main():
-    print("Hello world!")
+    myapp = App()
+    myapp.mainloop()
 
 
 if __name__ == "__main__":
