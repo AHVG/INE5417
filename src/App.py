@@ -1,7 +1,5 @@
 import tkinter as tk
 
-from functools import partial
-
 from Board import Board
 from TKBoardBuilder import TKBoardBuilder
 from PlayManager import PlayManager
