@@ -2,14 +2,13 @@ import tkinter as tk
 
 from functools import partial
 
-from IBoardBuilder import IBoardBuilder
+from ILayoutBuilder import ILayoutBuilder
 
 
-class TKBoardBuilder(IBoardBuilder):
+class TKLayoutBuilder(ILayoutBuilder):
 
     def __init__(self, root) -> None:
         self.root = root
-
 
     def build(self, ultimate_tic_tac_toe, callback):
         for i, line in enumerate(ultimate_tic_tac_toe.board):
