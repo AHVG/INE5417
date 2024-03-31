@@ -5,9 +5,6 @@ from TKLayoutBuilder import TKLayoutBuilder
 from PlayManager import PlayManager
 from WinnerChecker import WinnerChecker
 
-# TODO: desacoplar lógica de criação de layout desta classe
-# TODO: Colocar todos atributos como protegido
-
 
 class App(tk.Tk):
     def __init__(self):
@@ -22,7 +19,6 @@ class App(tk.Tk):
     def initialize_board(self):
         TKLayoutBuilder(self).build(self.ultimate_ttt, self.on_click)
 
-    # TODO: tirar isso daqui
     def on_click(self, u_position, ttt_position, button):
 
         if not self.play_manager.play_allowed(u_position, ttt_position):

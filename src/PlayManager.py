@@ -1,6 +1,4 @@
 
-# TODO: Adicionar lógica de próxima jogada aq
-
 
 class PlayManager:
 
