@@ -20,12 +20,11 @@ class PlayManager:
 
         if tic_tac_toe.get_value():
             return False
-        
+
         if tic_tac_toe.board[h][k].get_value():
             return False
-        
+
         return True
 
     def switch_player(self):
         self.current_player = "X" if self.current_player == "O" else "O"
-        

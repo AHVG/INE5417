@@ -1,8 +1,7 @@
 from App import App
 
 def main():
-    myapp = App()
-    myapp.mainloop()
+    App().mainloop()
 
 
 if __name__ == "__main__":
