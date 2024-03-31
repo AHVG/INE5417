@@ -6,7 +6,6 @@ class PlayManager:
     def __init__(self, ultimate_ttt, first_player='X') -> None:
         self.current_player = first_player
         self.ultimate_ttt = ultimate_ttt
-
         self.last_play = None
 
     def play_allowed(self, u_position, ttt_position):

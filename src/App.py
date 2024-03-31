@@ -5,6 +5,7 @@ from TKBoardBuilder import TKBoardBuilder
 from PlayManager import PlayManager
 
 # TODO: desacoplar lógica de criação de layout desta classe
+# TODO: Colocar todos atributos como protegido
 
 
 class App(tk.Tk):
@@ -21,7 +22,7 @@ class App(tk.Tk):
         TKBoardBuilder(self).build(self.ultimate_ttt, self.on_click)
 
 
-    # TODO: tirar isso daqui e adicionar a verificação do tabuleiro maior
+    # TODO: tirar isso daqui
     def on_click(self, u_position, ttt_position, button):
 
         if not self.play_manager.play_allowed(u_position, ttt_position):
