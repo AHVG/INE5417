@@ -1,0 +1,2 @@
+
+SIZE_OF_BOARD = 3

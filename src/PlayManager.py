@@ -11,7 +11,7 @@ class PlayManager:
         i, j = u_position
         k, h = ttt_position
 
-        tic_tac_toe = self.ultimate_ttt.board[i][j]
+        tic_tac_toe = self.ultimate_ttt.childs[i][j]
 
         if self.last_play:
             if self.last_play != u_position:
@@ -20,7 +20,7 @@ class PlayManager:
         if tic_tac_toe.get_value():
             return False
 
-        if tic_tac_toe.board[h][k].get_value():
+        if tic_tac_toe.childs[h][k].get_value():
             return False
 
         return True

@@ -11,7 +11,7 @@ class TKLayoutBuilder(ILayoutBuilder):
         self.root = root
 
     def build(self, ultimate_tic_tac_toe, callback):
-        for i, line in enumerate(ultimate_tic_tac_toe.board):
+        for i, line in enumerate(ultimate_tic_tac_toe.childs):
             for j, tic_tac_toe in enumerate(line):
                 x0, y0 = j * 4, i * 4
 
@@ -24,7 +24,7 @@ class TKLayoutBuilder(ILayoutBuilder):
                 frame.bind("<Enter>", partial(changeBg, frame=frame, color="gray"))
                 frame.bind("<Leave>", partial(changeBg, frame=frame, color="white"))
 
-                for k, line in enumerate(tic_tac_toe.board):
+                for k, line in enumerate(tic_tac_toe.childs):
                     for h, position in enumerate(line):
                         button = tk.Button(frame, text=position.get_value(), font=('Arial', 20), height=2, width=4,
                                            bg='white', fg='gray',)

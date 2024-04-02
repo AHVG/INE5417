@@ -1,33 +1,23 @@
-from Position import Position
+from Constants import SIZE_OF_BOARD
 
 
-class Board(Position):
+class Board:
 
-    SIZE = 3
+    def __init__(self) -> None:
+        self.childs: list[list[Board]] = []
+        self.value = None
 
-    def __init__(self, position_type=Position) -> None:
-        super().__init__()
-        self.board = None
-        self.initialize_board(position_type)
-
-    def initialize_board(self, position_type):
-        self.board = [[position_type() for _ in range(0, Board.SIZE)] for _ in range(0, Board.SIZE)]
+    def get_value(self):
+        return self.value
+    
+    def set_value(self, new_value):
+        self.value = new_value
 
     def get_lines(self):
-        return [line[:] for line in self.board]
+        return [line[:] for line in self.childs]
 
     def get_columns(self):
-        return [[self.board[i][j] for i in range(Board.SIZE)] for j in range(Board.SIZE)]
+        return [[self.childs[i][j] for i in range(SIZE_OF_BOARD)] for j in range(SIZE_OF_BOARD)]
 
     def get_diagonals(self):
-        return [[self.board[i][i] for i in range(Board.SIZE)], [self.board[j][i] for j, i in zip(list(range(Board.SIZE)), list(range(Board.SIZE - 1, -1, -1)))]]
-
-    def check_winner(self):
-        regions = [*self.get_lines(), *self.get_columns(), *self.get_diagonals()]
-
-        for region in regions:
-            if len(set([position.get_value() for position in region])) == 1 and region[0].get_value():
-                self.set_value(region[0].get_value())
-                return region[0].get_value()
-
-        return None
+        return [[self.childs[i][i] for i in range(SIZE_OF_BOARD)], [self.childs[j][i] for j, i in zip(list(range(SIZE_OF_BOARD)), list(range(SIZE_OF_BOARD - 1, -1, -1)))]]
