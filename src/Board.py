@@ -21,3 +21,14 @@ class Board:
 
     def get_diagonals(self):
         return [[self.childs[i][i] for i in range(SIZE_OF_BOARD)], [self.childs[j][i] for j, i in zip(list(range(SIZE_OF_BOARD)), list(range(SIZE_OF_BOARD - 1, -1, -1)))]]
+
+    def check(self):
+        regions = [*self.get_lines(), *self.get_columns(), *self.get_diagonals()]
+
+        for region in regions:
+            if len(set([position.get_value() for position in region])) == 1 and region[0].get_value():
+                self.set_value(region[0].get_value())
+                print(f"Player {self.get_value()} won")
+                return region[0].get_value()
+
+        return None

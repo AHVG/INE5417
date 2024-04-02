@@ -3,7 +3,6 @@ import tkinter as tk
 from UltimateTicTacToe import UltimateTicTacToe
 from TKLayoutBuilder import TKLayoutBuilder
 from PlayManager import PlayManager
-from WinnerChecker import WinnerChecker
 
 
 class App(tk.Tk):
@@ -11,7 +10,6 @@ class App(tk.Tk):
         super().__init__()
         self.ultimate_ttt = UltimateTicTacToe()
         self.play_manager = PlayManager(self.ultimate_ttt)
-        self.winner_checker = WinnerChecker()
 
         self.title("Ultimate Tic Tac Toe")
         self.initialize_board()
@@ -31,14 +29,9 @@ class App(tk.Tk):
         ttt.childs[k][h].set_value(self.play_manager.current_player)
         button.config(text=self.play_manager.current_player)
 
-        if self.winner_checker.check(ttt):
-            if self.winner_checker.check(self.ultimate_ttt):
+        if self.ttt.check(ttt):
+            if self.ultimate_ttt.check(self.ultimate_ttt):
                 print(f"Player {self.play_manager.current_player} won")
-        
-        # TODO: Arrumar gambiarra
-        if self.ultimate_ttt.childs[k][h].get_value():
-            self.play_manager.last_play = None
-        else:
-            self.play_manager.last_play = (k, h)
 
+        self.play_manager.set_last_play(ttt_position)
         self.play_manager.switch_player()
