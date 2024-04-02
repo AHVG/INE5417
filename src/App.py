@@ -1,5 +1,6 @@
 import tkinter as tk
 
+from Constants import SIZE_OF_BOARD
 from UltimateTicTacToe import UltimateTicTacToe
 from TKLayoutBuilder import TKLayoutBuilder
 from PlayManager import PlayManager
@@ -32,6 +33,14 @@ class App(tk.Tk):
         if ttt.check():
             if self.ultimate_ttt.check():
                 print(f"Player {self.play_manager.current_player} won")
+
+        window = button.master.master.master
+
+        for frame in window.winfo_children():
+            frame.config(bg="white")
+
+        next_frame = window.winfo_children()[k * SIZE_OF_BOARD + h]
+        next_frame.config(bg="gray")
 
         self.play_manager.set_last_play(ttt_position)
         self.play_manager.switch_player()

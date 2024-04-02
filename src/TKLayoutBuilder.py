@@ -18,8 +18,10 @@ class TKLayoutBuilder(ILayoutBuilder):
                 def changeBg(event, frame, color):
                     frame.config(bg=color)
 
-                frame = tk.Frame(self.root, bg='white')
-                frame.grid(row=i, column=j, padx=4, pady=4)
+                big_frame = tk.Frame(self.root, bg='white')
+                big_frame.grid(row=i, column=j, padx=4, pady=4)
+                frame = tk.Frame(big_frame, bg='white')
+                frame.grid(row=0, column=0, padx=4, pady=4)
 
                 frame.bind("<Enter>", partial(changeBg, frame=frame, color="gray"))
                 frame.bind("<Leave>", partial(changeBg, frame=frame, color="white"))
