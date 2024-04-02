@@ -29,8 +29,8 @@ class App(tk.Tk):
         ttt.childs[k][h].set_value(self.play_manager.current_player)
         button.config(text=self.play_manager.current_player)
 
-        if self.ttt.check(ttt):
-            if self.ultimate_ttt.check(self.ultimate_ttt):
+        if ttt.check():
+            if self.ultimate_ttt.check():
                 print(f"Player {self.play_manager.current_player} won")
 
         self.play_manager.set_last_play(ttt_position)
