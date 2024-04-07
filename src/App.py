@@ -20,6 +20,14 @@ class App:
         self._root.title("Ultimate Tic Tac Toe")
         self._root.config(bg="white")
 
+        # Adicionanod barra de menu
+        # drop down?
+        menu = tk.Menu(self._root)
+        menu.add_command(label="Start match", command=lambda: print("Start match"))
+        menu.add_command(label="Restart", command=lambda: print("Restart"))
+        menu.add_command(label="Exit", command=self._root.quit)
+        self._root.config(menu=menu)
+
         self._player_status = tk.Frame(self._root)
         self._player_status.grid(row=0, column=0)
 
