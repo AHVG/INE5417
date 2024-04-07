@@ -13,20 +13,19 @@ class App:
         self.current_player = "O"
 
         self.root = tk.Tk()
-
         self.root.title("Ultimate Tic Tac Toe")
         self.root.config(bg="white")
 
-        self.player_status = tk.Frame(self.root, bg='blue')
+        self.player_status = tk.Frame(self.root)
         self.player_status.grid(row=0, column=0)
 
-        # Carrega a imagem PNG usando Pillow
         img = Image.open("src/imgs/player_image.png")
         img = img.resize((300, 300))
 
         photo = ImageTk.PhotoImage(img)
         label = tk.Label(self.player_status, image=photo)
         label.grid(row=0, column=0)
+        label.config(bg="white")
 
         label = tk.Label(self.player_status, image=photo)
         label.grid(row=1, column=0)
