@@ -11,3 +11,7 @@ Depois de criar, agora é preciso ativá-lo
 Após configurado corretamente o ambiente virtual, agora é necessário baixar as dependências
 
 `pip3 install -r requirements.txt`
+
+Com as dependências, falta iniciar o jogo
+
+`python3 src/main.py`
