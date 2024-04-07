@@ -15,7 +15,6 @@ class App:
         self._local_player = Player("123", "X")
         self._remote_player = Player("312", "O")
         self._round_manager = RoundManager(self._ultimate_ttt, self._local_player, self._remote_player)
-        self._current_player = "O"
 
         self._root = tk.Tk()
         self._root.title("Ultimate Tic Tac Toe")
@@ -41,7 +40,6 @@ class App:
 
         for i, line in enumerate(self._ultimate_ttt.get_childs()):
             for j, tic_tac_toe in enumerate(line):
-                x0, y0 = j * 4, i * 4
 
                 def changeBg(event, frame, color):
                     frame.config(bg=color)
@@ -60,7 +58,7 @@ class App:
                         button = tk.Button(frame, text=position.get_value(), font=('Arial', 20), height=2, width=4,
                                            bg='white', fg='gray',)
                         button.config(command=partial(self.put_marker, Coordinate(j, i), Coordinate(h, k), button))
-                        button.grid(row=k + y0, column=h + x0, sticky='nsew', padx=1, pady=1)
+                        button.grid(row=k, column=h, sticky='nsew', padx=1, pady=1)
     
         self._root.mainloop()
 
