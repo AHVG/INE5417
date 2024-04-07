@@ -1,15 +1,20 @@
 import tkinter as tk
-from PIL import Image, ImageTk
 
+from PIL import Image, ImageTk
 from functools import partial
 
-from Constants import SIZE_OF_BOARD
 from UltimateTicTacToe import UltimateTicTacToe
+from Player import Player
+from RoundManager import RoundManager
+from Coordinate import Coordinate
 
 
 class App:
     def __init__(self):
         self._ultimate_ttt = UltimateTicTacToe()
+        self._local_player = Player("123", "X")
+        self._remote_player = Player("312", "O")
+        self._round_manager = RoundManager(self._ultimate_ttt, self._local_player, self._remote_player)
         self._current_player = "O"
 
         self._root = tk.Tk()
@@ -54,21 +59,13 @@ class App:
                     for h, position in enumerate(line):
                         button = tk.Button(frame, text=position.get_value(), font=('Arial', 20), height=2, width=4,
                                            bg='white', fg='gray',)
-                        button.config(command=partial(self.on_click, (i, j), (k, h), button))
+                        button.config(command=partial(self.put_marker, Coordinate(j, i), Coordinate(h, k), button))
                         button.grid(row=k + y0, column=h + x0, sticky='nsew', padx=1, pady=1)
     
         self._root.mainloop()
 
-    def switch_player(self):
-        self._current_player = "X" if self._current_player == "O" else "O"
+    def put_marker(self, u_position, ttt_position, button):
+        symbol = self._round_manager.get_current_player().get_symbol()
 
-    def on_click(self, u_position, ttt_position, button):
-        
-        i, j = u_position
-        k, h = ttt_position
-
-        ttt = self._ultimate_ttt.get_childs()[i][j]
-        ttt.get_childs()[k][h].set_value(self._current_player)
-        button.config(text=self._current_player)
-
-        self.switch_player()
+        if self._round_manager.put_marker(u_position, ttt_position):
+            button.config(text=symbol)

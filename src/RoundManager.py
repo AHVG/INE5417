@@ -6,7 +6,7 @@ class RoundManager:
         self._ultimate_tic_tac_toe = ultimate_tic_tac_toe
         self._local_player = local_player
         self._remote_player = remote_player
-        self._current_player = None
+        self._current_player = local_player
 
     def get_ultimate_tic_tac_toe(self):
         return self._ultimate_tic_tac_toe
@@ -31,3 +31,14 @@ class RoundManager:
     
     def set_current_player(self, new_current_player):
         self._current_player = new_current_player
+
+    def switch_player(self):
+        self._current_player = self._remote_player if self._current_player.get_symbol() == self._local_player.get_symbol() else self._local_player
+
+    def put_marker(self, u_position, ttt_position):
+        ttt = self._ultimate_tic_tac_toe.get_childs()[u_position.get_y()][u_position.get_x()]
+        ttt.get_childs()[ttt_position.get_y()][ttt_position.get_x()].set_value(self._current_player)
+
+        self.switch_player()
+
+        return True
