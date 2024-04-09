@@ -7,4 +7,4 @@ class UltimateTicTacToe(Board):
 
     def __init__(self) -> None:
         super().__init__()
-        self.childs = [[TicTacToe() for _ in range(SIZE_OF_BOARD)] for _ in range(SIZE_OF_BOARD)]
+        self._childs = [[TicTacToe() for _ in range(SIZE_OF_BOARD)] for _ in range(SIZE_OF_BOARD)]
