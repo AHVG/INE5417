@@ -30,12 +30,18 @@ class Board:
                 [self._childs[j][i] for j, i in zip(list(range(SIZE_OF_BOARD)), list(range(SIZE_OF_BOARD - 1, -1, -1)))]]
 
     def check(self):
+        if self.get_value():
+            return self.get_value()
+        
+        if not self._childs:
+            return self.get_value()
+
         regions = [*self.get_lines(), *self.get_columns(), *self.get_diagonals()]
 
         for region in regions:
-            if len(set([position.get_value() for position in region])) == 1 and region[0].get_value():
-                self._set_value(region[0].get_value())
-                print(f"Player {self._get_value()} won")
+            if len(set([position.check() for position in region])) == 1 and region[0].get_value():
+                self.set_value(region[0].get_value())
+                print(f"Player {self.get_value()} won")
                 return region[0].get_value()
 
         return None

@@ -36,8 +36,20 @@ class RoundManager:
         self._current_player = self._remote_player if self._current_player.get_symbol() == self._local_player.get_symbol() else self._local_player
 
     def put_marker(self, u_position, ttt_position):
+
+        # Verficar se está rolando jogo
+        # Verificar a vez da pessoa
+        # Verificar se é válido
+
         ttt = self._ultimate_tic_tac_toe.get_childs()[u_position.get_y()][u_position.get_x()]
-        ttt.get_childs()[ttt_position.get_y()][ttt_position.get_x()].set_value(self._current_player)
+        ttt.get_childs()[ttt_position.get_y()][ttt_position.get_x()].set_value(self._current_player.get_symbol())
+        
+        # Verificar vencedor
+
+        if self._ultimate_tic_tac_toe.check():
+            print("vencedor")
+        else:
+            print("sem vencedor")
 
         self.switch_player()
 
