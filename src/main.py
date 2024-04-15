@@ -1,7 +1,8 @@
-from App import App
+from PlayerActor import PlayerActor
+
 
 def main():
-    App().mainloop()
+    PlayerActor()
 
 if __name__ == "__main__":
     main()
