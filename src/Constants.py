@@ -1,2 +1,2 @@
 
-SIZE_OF_BOARD = 3
+SIZE_OF_BOARD: int = 3
