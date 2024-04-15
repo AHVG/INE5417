@@ -1,7 +1,12 @@
 import tkinter as tk
 
+from tkinter import simpledialog, messagebox
 from PIL import Image, ImageTk
 from functools import partial
+
+from dog.dog_interface import DogPlayerInterface
+from dog.dog_actor import DogActor
+from dog.start_status import StartStatus
 
 from UltimateTicTacToe import UltimateTicTacToe
 from RoundManager import RoundManager
@@ -12,7 +17,7 @@ from Board import Board
 from Constants import SIZE_OF_BOARD
 
 
-class PlayerActor:
+class PlayerActor(DogPlayerInterface):
     """
     Classe que modela a interação do player e do DOG com a aplicação    
 
@@ -40,6 +45,8 @@ class PlayerActor:
             Imagem do x vermelho com fundo branco
         _blue_o_bg_white : ImageTk.PhotoImage
             Imagem do o azul com fundo branco
+        _dog_server : DogActor
+            Ator DOG que age sobre PlayerActor (receive_move, receive_start, receive_withdrawal_notification)
     """
 
     def __init__(self) -> None:
@@ -56,7 +63,7 @@ class PlayerActor:
         self._root.config(bg="white")
 
         menu = tk.Menu(self._root)
-        menu.add_command(label="Start match", command=lambda: print("Start match"))
+        menu.add_command(label="Start match", command=lambda: self.start_match)
         menu.add_command(label="Reset", command=lambda: print("Reset"))
         menu.add_command(label="Exit", command=self._root.quit)
         self._root.config(menu=menu)
@@ -118,6 +125,12 @@ class PlayerActor:
 
         # Assegura que todos os tamanhos estão corretos
         self._root.update()
+
+        # Se conectando ao dog serve
+        player_name = simpledialog.askstring(title="Player identifcation", prompt="Qual o seu nome?")
+        self._dog_server: DogActor = DogActor()
+        message = self._dog_server.initialize(player_name, self)
+        messagebox.showinfo(message=message)
     
         self._root.mainloop()
 
@@ -135,9 +148,9 @@ class PlayerActor:
         """
         Carrega as imagens para serem renderizadas quando necessário
         """
-        self._player_img: ImageTk.PhotoImage = ImageTk.PhotoImage(self.load_img("src/imgs/player_image.png", (300, 300)))
-        self._red_x_bg_white: ImageTk.PhotoImage = ImageTk.PhotoImage(self.load_img("src/imgs/red_x_bg_white.png", (278, 242)))
-        self._blue_o_bg_white: ImageTk.PhotoImage = ImageTk.PhotoImage(self.load_img("src/imgs/blue_o_bg_white.png", (278, 242)))
+        self._player_img: ImageTk.PhotoImage = ImageTk.PhotoImage(self.load_img("imgs/player_image.png", (300, 300)))
+        self._red_x_bg_white: ImageTk.PhotoImage = ImageTk.PhotoImage(self.load_img("imgs/red_x_bg_white.png", (278, 242)))
+        self._blue_o_bg_white: ImageTk.PhotoImage = ImageTk.PhotoImage(self.load_img("imgs/blue_o_bg_white.png", (278, 242)))
 
     def update_gui(self) -> None:
         """
@@ -162,6 +175,21 @@ class PlayerActor:
                     ttt_x, ttt_y = ttt_coordinate.get_x(), ttt_coordinate.get_y()
                     symbol = self._ultimate_ttt.get_childs()[u_y][u_x].get_childs()[ttt_y][ttt_x].get_value()
                     self._buttons[u_y][u_x][ttt_y][ttt_x].config(text=symbol)
+
+    def start_match(self) -> None:
+        start_status = self._dog_server.start_match(2)
+        message = start_status.get_message()
+        messagebox.showinfo(message=message)
+
+    def receive_start(self, start_status: StartStatus) -> None:
+        message = start_status.get_message()
+        messagebox.showinfo(message=message)
+
+    def receive_move(self, a_move: dict[str, str]) -> None:
+        print("O método receive_move() precisa ser sobrescrito")
+
+    def receive_withdrawal_notification(self) -> None:
+        print("O método receive_withdrawal_notification() precisa ser sobrescrito")
 
     def on_click_board(self, u_position: Coordinate, ttt_position: Coordinate) -> None:
         """
