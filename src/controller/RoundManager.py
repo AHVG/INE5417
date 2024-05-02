@@ -1,6 +1,6 @@
-from Coordinate import Coordinate
-from Player import Player
-from Board import Board
+from model.Coordinate import Coordinate
+from model.Player import Player
+from model.Board import Board
 
 
 class RoundManager:

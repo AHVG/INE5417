@@ -8,13 +8,13 @@ from dog.dog_interface import DogPlayerInterface
 from dog.dog_actor import DogActor
 from dog.start_status import StartStatus
 
-from UltimateTicTacToe import UltimateTicTacToe
-from RoundManager import RoundManager
-from Coordinate import Coordinate
-from Player import Player
-from Board import Board
+from controller.RoundManager import RoundManager
 
-from Constants import SIZE_OF_BOARD
+from model.Constants import SIZE_OF_BOARD
+from model.UltimateTicTacToe import UltimateTicTacToe
+from model.Coordinate import Coordinate
+from model.Player import Player
+from model.Board import Board
 
 
 class PlayerActor(DogPlayerInterface):
@@ -62,12 +62,20 @@ class PlayerActor(DogPlayerInterface):
         self._root.title("Ultimate Tic Tac Toe")
         self._root.config(bg="white")
 
+        self.create_ui()
+
+        self.connect_to_dog()
+    
+        self._root.mainloop()
+
+    def create_menu(self):
         menu = tk.Menu(self._root)
         menu.add_command(label="Start match", command=lambda: self.start_match)
-        menu.add_command(label="Reset", command=lambda: print("Reset"))
+        menu.add_command(label="Reset", command=lambda: self.reset)
         menu.add_command(label="Exit", command=self._root.quit)
         self._root.config(menu=menu)
 
+    def create_status_bar(self):
         self._player_status: tk.Frame = tk.Frame(self._root)
         self._player_status.grid(row=0, column=0)
 
@@ -81,10 +89,12 @@ class PlayerActor(DogPlayerInterface):
         label.grid(row=1, column=0)
         label.config(bg="white")
 
+    def create_board(self):
+        
         self._board_frame: tk.Frame = tk.Frame(self._root, bg='white')
         self._board_frame.grid(row=0, column=1, padx=50, pady=50)
 
-        def build_board(tic_tac_toe, frame) -> list[list[tk.Button]]:
+        def build_tic_tac_toe(tic_tac_toe, frame) -> list[list[tk.Button]]:
             buttons = []
 
             for k, line in enumerate(tic_tac_toe.get_childs()):
@@ -99,7 +109,7 @@ class PlayerActor(DogPlayerInterface):
                 buttons.append(buttons_line)
 
             return buttons
-
+    
         self._buttons: list[list[list[list[tk.Button]]]] = []
 
         for i, line in enumerate(self._ultimate_ttt.get_childs()):
@@ -107,7 +117,7 @@ class PlayerActor(DogPlayerInterface):
 
             for j, tic_tac_toe in enumerate(line):
 
-                def changeBg(event, frame, color):
+                def change_bg(event, frame, color):
                     frame.config(bg=color)
 
                 big_frame = tk.Frame(self._board_frame, bg='white', name=f'{i}x{j}')
@@ -116,27 +126,23 @@ class PlayerActor(DogPlayerInterface):
                 frame = tk.Frame(big_frame, bg='white')
                 frame.grid(row=0, column=0, padx=4, pady=4)
 
-                frame.bind("<Enter>", partial(changeBg, frame=frame, color="gray"))
-                frame.bind("<Leave>", partial(changeBg, frame=frame, color="white"))
+                frame.bind("<Enter>", partial(change_bg, frame=frame, color="gray"))
+                frame.bind("<Leave>", partial(change_bg, frame=frame, color="white"))
 
-                buttons_line.append(build_board(tic_tac_toe, frame))
+                buttons_line.append(build_tic_tac_toe(tic_tac_toe, frame))
             
             self._buttons.append(buttons_line)
 
-        # Assegura que todos os tamanhos estão corretos
-        self._root.update()
-
-        # Se conectando ao dog serve
-        player_name = simpledialog.askstring(title="Player identifcation", prompt="Qual o seu nome?")
-        self._dog_server: DogActor = DogActor()
-        message = self._dog_server.initialize(player_name, self)
-        messagebox.showinfo(message=message)
-    
-        self._root.mainloop()
+    def create_ui(self):
+        self.create_menu()
+        self.create_status_bar()
+        self.create_board()
+        self._root.update()  # Assegura que todos os tamanhos estão corretos
 
     def load_img(self, path: str, size: tuple = None) -> Image:
         try:
             img = Image.open(path)
+
             if size:
                 img = img.resize(size)
 
@@ -175,6 +181,15 @@ class PlayerActor(DogPlayerInterface):
                     ttt_x, ttt_y = ttt_coordinate.get_x(), ttt_coordinate.get_y()
                     symbol = self._ultimate_ttt.get_childs()[u_y][u_x].get_childs()[ttt_y][ttt_x].get_value()
                     self._buttons[u_y][u_x][ttt_y][ttt_x].config(text=symbol)
+
+    def connect_to_dog(self):
+        player_name = simpledialog.askstring(title="Player identifcation", prompt="Qual o seu nome?")
+        self._dog_server: DogActor = DogActor()
+        message = self._dog_server.initialize(player_name, self)
+        messagebox.showinfo(message=message)        
+
+    def reset(self):
+        print("Resetando")
 
     def start_match(self) -> None:
         start_status = self._dog_server.start_match(2)

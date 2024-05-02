@@ -1,7 +1,7 @@
-from TicTacToe import TicTacToe
-from Board import Board
+from model.Constants import SIZE_OF_BOARD
 
-from Constants import SIZE_OF_BOARD
+from model.TicTacToe import TicTacToe
+from model.Board import Board
 
 
 class UltimateTicTacToe(Board):

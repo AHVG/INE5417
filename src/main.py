@@ -1,4 +1,4 @@
-from PlayerActor import PlayerActor
+from view.PlayerActor import PlayerActor
 
 
 def main():
