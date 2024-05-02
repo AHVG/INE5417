@@ -1,4 +1,4 @@
-from model.Constants import SIZE_OF_BOARD
+from utils.Constants import SIZE_OF_BOARD
 
 from model.TicTacToe import TicTacToe
 from model.Board import Board

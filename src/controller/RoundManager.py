@@ -1,4 +1,5 @@
-from model.Coordinate import Coordinate
+from utils.Coordinate import Coordinate
+
 from model.Player import Player
 from model.Board import Board
 
