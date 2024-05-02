@@ -1,5 +1,7 @@
 from utils.Coordinate import Coordinate
 
+from controller.State import State
+
 from model.Player import Player
 from model.Board import Board
 
@@ -20,7 +22,7 @@ class RoundManager:
             Player que está atualmente jogando
     """
     
-    def __init__(self, ultimate_tic_tac_toe: Board, local_player: Player, remote_player: Player) -> None:
+    def __init__(self, ultimate_tic_tac_toe: Board, local_player: Player, remote_player: Player, state: State = State.WAITING) -> None:
         """
         Inicializa o gerenciador de round
 
@@ -33,6 +35,7 @@ class RoundManager:
         self._local_player: Player = local_player
         self._remote_player: Player = remote_player
         self._current_player: Player = local_player
+        self._current_state = state
 
     def get_ultimate_tic_tac_toe(self) -> Board:
         return self._ultimate_tic_tac_toe
@@ -58,6 +61,12 @@ class RoundManager:
     def set_current_player(self, new_current_player: Player) -> None:
         self._current_player = new_current_player
 
+    def get_current_state(self):
+        return self._state
+
+    def set_current_state(self, current_state):
+        self._current_state = current_state
+
     def switch_player(self) -> None:
         self._current_player = self._remote_player if self._current_player.get_symbol() == self._local_player.get_symbol() else self._local_player
 
@@ -72,7 +81,6 @@ class RoundManager:
         Returns:
             bool: Se houve colocação de marcador retorna True; do contrário False
         """
-
         # Verificar se é válido
 
         # Atualizando o tabuleiro

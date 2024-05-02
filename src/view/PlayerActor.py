@@ -78,6 +78,7 @@ class PlayerActor(DogPlayerInterface):
     
         self._root.mainloop()
 
+    # Caso de uso?
     def update_gui(self) -> None:
         """
         Atualiza o estado da GUI após processamento da lógica do jogo
