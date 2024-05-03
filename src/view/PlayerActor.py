@@ -111,21 +111,31 @@ class PlayerActor(DogPlayerInterface):
 
     def reset(self):
         print("Resetando")
+        # Chamar RoundManager
+        self.update_gui()
 
     def start_match(self) -> None:
         start_status = self._dog_server.start_match(2)
         message = start_status.get_message()
         messagebox.showinfo(message=message)
+        # Chamar RoundManager
+        self.update_gui()
 
     def receive_start(self, start_status: StartStatus) -> None:
         message = start_status.get_message()
         messagebox.showinfo(message=message)
+        # Chamar RoundManager
+        self.update_gui()
 
-    def receive_move(self, a_move: dict[str, str]) -> None:
+    def receive_move(self, a_move) -> None:
         print("O método receive_move() precisa ser sobrescrito")
+        # Chamar RoundManager
+        self.update_gui()
 
     def receive_withdrawal_notification(self) -> None:
         print("O método receive_withdrawal_notification() precisa ser sobrescrito")
+        # Chamar RoundManager
+        self.update_gui()
 
     def on_click_board(self, u_position: Coordinate, ttt_position: Coordinate) -> None:
         """

@@ -19,13 +19,13 @@ class Board:
         """
         Inicializa um tabuleiro como se fosse uma casa por padrão
         """
-        self._childs: list[list[Board]] = []
+        self._childs: list[list[Board]] = None
         self._value: str = None
 
-    def get_childs(self) -> list[list[Board]]:
+    def get_childs(self):
         return self._childs
     
-    def set_childs(self, new_childs: list[list[Board]]) -> None:
+    def set_childs(self, new_childs) -> None:
         self._childs = new_childs
 
     def get_value(self) -> str:
@@ -34,13 +34,13 @@ class Board:
     def set_value(self, new_value: str) -> None:
         self._value = new_value
 
-    def get_lines(self) -> list[Board]:
+    def get_lines(self):
         return [line[:] for line in self._childs]
 
-    def get_columns(self) -> list[Board]:
+    def get_columns(self):
         return [[self._childs[i][j] for i in range(SIZE_OF_BOARD)] for j in range(SIZE_OF_BOARD)]
 
-    def get_diagonals(self) -> list[Board]:
+    def get_diagonals(self):
         return [[self._childs[i][i] for i in range(SIZE_OF_BOARD)],
                 [self._childs[j][i] for j, i in zip(list(range(SIZE_OF_BOARD)), list(range(SIZE_OF_BOARD - 1, -1, -1)))]]
 

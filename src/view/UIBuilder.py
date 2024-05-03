@@ -79,7 +79,7 @@ class UIBuilder:
         self._board_frame: tk.Frame = tk.Frame(self._root, bg='white')
         self._board_frame.grid(row=0, column=1, padx=50, pady=50)
 
-        def build_tic_tac_toe(tic_tac_toe, frame) -> list[list[tk.Button]]:
+        def build_tic_tac_toe(tic_tac_toe, frame):
             buttons = []
 
             for k, line in enumerate(tic_tac_toe.get_childs()):
