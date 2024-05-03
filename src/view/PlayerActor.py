@@ -110,31 +110,35 @@ class PlayerActor(DogPlayerInterface):
         messagebox.showinfo(message=message)        
 
     def reset(self):
-        print("Resetando")
-        # Chamar RoundManager
+        print("reset chamado")
+        self._round_manager.reset()
         self.update_gui()
 
     def start_match(self) -> None:
+        print("start_match chamado")
         start_status = self._dog_server.start_match(2)
         message = start_status.get_message()
         messagebox.showinfo(message=message)
-        # Chamar RoundManager
+        self._round_manager.start_match()
         self.update_gui()
 
     def receive_start(self, start_status: StartStatus) -> None:
+        print("receive_start chamado")
         message = start_status.get_message()
         messagebox.showinfo(message=message)
-        # Chamar RoundManager
+        self._round_manager.receive_start()
         self.update_gui()
 
     def receive_move(self, a_move) -> None:
-        print("O método receive_move() precisa ser sobrescrito")
-        # Chamar RoundManager
+        print("receive_move chamado")
+        u_position = Coordinate(*a_move["position"]["u"])
+        ttt_position = Coordinate(*a_move["position"]["ttt"])
+        self._round_manager.receive_move(u_position, ttt_position)
         self.update_gui()
 
     def receive_withdrawal_notification(self) -> None:
-        print("O método receive_withdrawal_notification() precisa ser sobrescrito")
-        # Chamar RoundManager
+        print("receive_withdrawal_notification chamado")
+        self._round_manager.receive_withdrawal_notification()
         self.update_gui()
 
     def on_click_board(self, u_position: Coordinate, ttt_position: Coordinate) -> None:
@@ -145,5 +149,6 @@ class PlayerActor(DogPlayerInterface):
             u_position (Coordinate): Coordenada no tabuleiro maior (Ultimate)
             ttt_position (Coordinate): Coordenada no tabuleiro menor (Tic Tac Toe)
         """
+        print("on_click_board chamado")
         self._round_manager.put_marker(u_position, ttt_position)
         self.update_gui()

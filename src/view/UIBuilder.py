@@ -56,9 +56,9 @@ class UIBuilder:
 
     def build_menu(self):
         menu = tk.Menu(self._root)
-        menu.add_command(label="Start match", command=lambda: self._player_actor.start_match)
-        menu.add_command(label="Reset", command=lambda: self._player_actor.reset)
-        menu.add_command(label="Exit", command=self._root.quit)
+        menu.add_command(label="Start match", command=lambda: self._player_actor.start_match())
+        menu.add_command(label="Reset", command=lambda: self._player_actor.reset())
+        menu.add_command(label="Exit", command=lambda: self._root.quit())
         self._root.config(menu=menu)
 
     def build_player_status(self):
