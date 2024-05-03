@@ -1,6 +1,6 @@
 from utils.Coordinate import Coordinate
 
-from controller.State import State
+from controller.Waiting import Waiting
 
 from model.Player import Player
 from model.Board import Board
@@ -22,7 +22,7 @@ class RoundManager:
             Player que está atualmente jogando
     """
     
-    def __init__(self, ultimate_tic_tac_toe: Board, local_player: Player, remote_player: Player, state: State = State.WAITING) -> None:
+    def __init__(self, ultimate_tic_tac_toe: Board, local_player: Player, remote_player: Player) -> None:
         """
         Inicializa o gerenciador de round
 
@@ -35,7 +35,7 @@ class RoundManager:
         self._local_player: Player = local_player
         self._remote_player: Player = remote_player
         self._current_player: Player = local_player
-        self._current_state = state
+        self._current_state = Waiting(self)
 
     def get_ultimate_tic_tac_toe(self) -> Board:
         return self._ultimate_tic_tac_toe
@@ -70,29 +70,24 @@ class RoundManager:
     def switch_player(self) -> None:
         self._current_player = self._remote_player if self._current_player.get_symbol() == self._local_player.get_symbol() else self._local_player
 
+    def switch_state(self, new_state) -> None:
+        # Colocar um exit e um entry no state?
+        self.set_current_state(new_state)
+
+    def reset(self):
+        self._current_state.reset()
+    
+    def start_match(self):
+        self._current_state.start_match()
+    
+    def receive_start(self):
+        self._current_state.receive_start()
+    
+    def receive_move(self):
+        self._current_state.receive_move()
+    
+    def receive_withdrawal_notification(self):
+        self._current_state.receive_withdrawal_notification()
+
     def put_marker(self, u_position: Coordinate, ttt_position: Coordinate) -> bool:
-        """
-        Coloca marcador se for uma casa válida (se está vazia e se está de acordo com o movimento anterior)
-
-        Args:
-            u_position (Coordinate): Coordenada no tabuleiro maior (referencia um tabuleiro menor)
-            ttt_position (Coordinate): Coordenada no tabuleiro menor
-
-        Returns:
-            bool: Se houve colocação de marcador retorna True; do contrário False
-        """
-        # Verificar se é válido
-
-        # Atualizando o tabuleiro
-        ttt = self._ultimate_tic_tac_toe.get_childs()[u_position.get_y()][u_position.get_x()]
-        ttt.get_childs()[ttt_position.get_y()][ttt_position.get_x()].set_value(self._current_player.get_symbol())
-        
-        # Verificar vencedor
-        if self._ultimate_tic_tac_toe.check():
-            print("vencedor")
-        else:
-            print("sem vencedor")
-
-        self.switch_player()
-
-        return True
+        return self._current_state.put_marker(u_position, ttt_position)
