@@ -11,6 +11,12 @@ class State(ABC):
         super().__init__()
         self._round_manager = round_manager
 
+    def entry(self):
+        pass
+
+    def exit(self):
+        pass
+
     def reset(self):
         pass
     

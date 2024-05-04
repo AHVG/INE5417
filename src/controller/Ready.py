@@ -11,11 +11,17 @@ class Ready(State):
     def _set_players(self, start_status: StartStatus):
         local_player = self._round_manager.get_local_player()
         local_player.set_id(start_status.get_local_id())
-        local_player.set_symbol(str(start_status.get_players()[0][2]))
+        local_player.set_symbol("O")
 
         remote_player = self._round_manager.get_remote_player()
         remote_player.set_id(start_status.get_players()[1][1])
-        remote_player.set_symbol(str(start_status.get_players()[1][2]))
+        remote_player.set_symbol("X")
+
+        first_player = local_player if start_status.get_players()[0][2] == "1" else remote_player
+        self._round_manager.set_current_player(first_player)
+
+    def entry(self):
+        self._round_manager.get_ultimate_tic_tac_toe.reset()
 
     def start_match(self, start_status: StartStatus):
         message = start_status.get_message()

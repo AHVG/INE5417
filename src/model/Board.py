@@ -44,6 +44,13 @@ class Board:
         return [[self._childs[i][i] for i in range(SIZE_OF_BOARD)],
                 [self._childs[j][i] for j, i in zip(list(range(SIZE_OF_BOARD)), list(range(SIZE_OF_BOARD - 1, -1, -1)))]]
 
+    def reset(self):
+        self._value = None
+
+        for line in self._childs:
+            for element in line:
+                element.reset()
+
     def check(self) -> str:
         """
         Checa a vitória do tabuleiro. Se alguem venceu, então define value como o vencedor.

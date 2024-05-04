@@ -39,7 +39,7 @@ class RoundManager:
         self._ultimate_tic_tac_toe: Board = ultimate_tic_tac_toe
         self._local_player: Player = local_player
         self._remote_player: Player = remote_player
-        self._current_player: Player = local_player
+        self._current_player: Player = None
         self._current_state = Ready(self)
         self._states = {
             "Ready": Ready(self),
@@ -82,9 +82,10 @@ class RoundManager:
         self._current_player = self._remote_player if self._current_player.get_symbol() == self._local_player.get_symbol() else self._local_player
 
     def switch_state(self, new_state) -> None:
-        # Colocar um exit e um entry no state?
         print(f"Trocando de estado de {type(self._current_state)} para {self._states[new_state]}")
+        self._current_state.exit()
         self.set_current_state(self._states[new_state])
+        self._current_state.entry()
 
     def reset(self):
         self._current_state.reset()
