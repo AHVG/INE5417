@@ -1,5 +1,6 @@
-from controller.State import State
 from utils.Coordinate import Coordinate
+
+from controller.State import State
 
 
 class Playing(State):
@@ -8,7 +9,7 @@ class Playing(State):
         pass
     
     def receive_withdrawal_notification(self):
-        pass
+        self._round_manager.switch_state("GameOver")
 
     def put_marker(self, u_position: Coordinate, ttt_position: Coordinate) -> bool:
         """

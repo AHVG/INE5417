@@ -107,7 +107,8 @@ class PlayerActor(DogPlayerInterface):
         player_name = simpledialog.askstring(title="Player identifcation", prompt="Qual o seu nome?")
         self._dog_server: DogActor = DogActor()
         message = self._dog_server.initialize(player_name, self)
-        messagebox.showinfo(message=message)        
+        messagebox.showinfo(message=message)
+        self._local_player.set_name(player_name) 
 
     def reset(self):
         print("reset chamado")

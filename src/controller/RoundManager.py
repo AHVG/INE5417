@@ -2,7 +2,10 @@ from dog.start_status import StartStatus
 
 from utils.Coordinate import Coordinate
 
+from controller.Ready import Ready
+from controller.Playing import Playing
 from controller.Waiting import Waiting
+from controller.GameOver import GameOver
 
 from model.Player import Player
 from model.Board import Board
@@ -37,7 +40,13 @@ class RoundManager:
         self._local_player: Player = local_player
         self._remote_player: Player = remote_player
         self._current_player: Player = local_player
-        self._current_state = Waiting(self)
+        self._current_state = Ready(self)
+        self._states = {
+            "Ready": Ready(self),
+            "Playing": Playing(self),
+            "Waiting": Waiting(self),
+            "GameOver": GameOver(self),
+        }
 
     def get_ultimate_tic_tac_toe(self) -> Board:
         return self._ultimate_tic_tac_toe
@@ -73,9 +82,9 @@ class RoundManager:
         self._current_player = self._remote_player if self._current_player.get_symbol() == self._local_player.get_symbol() else self._local_player
 
     def switch_state(self, new_state) -> None:
-        print(f"Trocando de estado de {type(self._current_state)} para {type(new_state)}")
         # Colocar um exit e um entry no state?
-        self.set_current_state(new_state)
+        print(f"Trocando de estado de {type(self._current_state)} para {self._states[new_state]}")
+        self.set_current_state(self._states[new_state])
 
     def reset(self):
         self._current_state.reset()

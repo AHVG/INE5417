@@ -14,16 +14,18 @@ class Player:
             Indica se veceu ou não
     """
 
-    def __init__(self, name: str = "", symbol: str = "", winner: bool = False) -> None:
+    def __init__(self, name: str = "", id: str = "", symbol: str = "", winner: bool = False) -> None:
         """
         Inicializa o jogador
 
         Args:
             name (str, optional): Nome do jogador. Defaults to "".
+            id (str, optional): ID do jogador. Defaults to "".
             symbol (str, optional): Símbolo do jogador. Defaults to "".
             winner (bool, optional): Venceu ou não venceu. Defaults to False.
         """
         self._name: str = name
+        self._id = id
         self._symbol: str = symbol
         self._winner: bool = winner
 
@@ -32,6 +34,12 @@ class Player:
     
     def set_name(self, new_name: str) -> None:
         self._name = new_name
+
+    def get_id(self) -> str:
+        return self._id
+    
+    def set_id(self, new_id: str) -> None:
+        self._id = new_id
 
     def get_symbol(self) -> str:
         return self._symbol

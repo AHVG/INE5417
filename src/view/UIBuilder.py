@@ -1,7 +1,8 @@
 import tkinter as tk
 
-from PIL import Image, ImageTk
 from functools import partial
+
+from PIL import Image, ImageTk
 
 from utils.Coordinate import Coordinate
 
