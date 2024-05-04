@@ -1,3 +1,5 @@
+from dog.start_status import StartStatus
+
 from utils.Coordinate import Coordinate
 
 from controller.Waiting import Waiting
@@ -71,17 +73,18 @@ class RoundManager:
         self._current_player = self._remote_player if self._current_player.get_symbol() == self._local_player.get_symbol() else self._local_player
 
     def switch_state(self, new_state) -> None:
+        print(f"Trocando de estado de {type(self._current_state)} para {type(new_state)}")
         # Colocar um exit e um entry no state?
         self.set_current_state(new_state)
 
     def reset(self):
         self._current_state.reset()
     
-    def start_match(self):
-        self._current_state.start_match()
+    def start_match(self, start_status: StartStatus):
+        self._current_state.start_match(start_status)
     
-    def receive_start(self):
-        self._current_state.receive_start()
+    def receive_start(self, start_status: StartStatus):
+        self._current_state.receive_start(start_status)
     
     def receive_move(self):
         self._current_state.receive_move()

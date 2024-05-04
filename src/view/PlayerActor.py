@@ -113,20 +113,20 @@ class PlayerActor(DogPlayerInterface):
         print("reset chamado")
         self._round_manager.reset()
         self.update_gui()
+        
+    def quit(self):
+        print("quit chamado")
+        self._root.quit()
 
     def start_match(self) -> None:
         print("start_match chamado")
         start_status = self._dog_server.start_match(2)
-        message = start_status.get_message()
-        messagebox.showinfo(message=message)
-        self._round_manager.start_match()
+        self._round_manager.start_match(start_status)
         self.update_gui()
 
     def receive_start(self, start_status: StartStatus) -> None:
         print("receive_start chamado")
-        message = start_status.get_message()
-        messagebox.showinfo(message=message)
-        self._round_manager.receive_start()
+        self._round_manager.receive_start(start_status)
         self.update_gui()
 
     def receive_move(self, a_move) -> None:
@@ -150,5 +150,7 @@ class PlayerActor(DogPlayerInterface):
             ttt_position (Coordinate): Coordenada no tabuleiro menor (Tic Tac Toe)
         """
         print("on_click_board chamado")
-        self._round_manager.put_marker(u_position, ttt_position)
+        if self._round_manager.put_marker(u_position, ttt_position):
+            self._dog_server.send_move({})
+        
         self.update_gui()

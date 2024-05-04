@@ -1,4 +1,7 @@
 from abc import ABC
+
+from dog.start_status import StartStatus
+
 from utils.Coordinate import Coordinate
 
 
@@ -11,10 +14,10 @@ class State(ABC):
     def reset(self):
         pass
     
-    def start_match(self):
+    def start_match(self, start_status: StartStatus):
         pass
     
-    def receive_start(self):
+    def receive_start(self, start_status: StartStatus):
         pass
     
     def receive_move(self):
