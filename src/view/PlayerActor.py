@@ -75,7 +75,8 @@ class PlayerActor(DogPlayerInterface):
         self._buttons = self._ui_director.get_buttons()
 
         self.connect_to_dog()
-    
+
+    def run(self):
         self._root.mainloop()
 
     # Caso de uso?
