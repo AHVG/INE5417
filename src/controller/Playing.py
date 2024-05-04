@@ -30,10 +30,12 @@ class Playing(State):
         
         # Verificar vencedor
         if self._round_manager.get_ultimate_tic_tac_toe().check():
+            self._round_manager.switch_state("GameOver")
             print("vencedor")
-        else:
-            print("sem vencedor")
-
+            return True
+        
+        print("sem vencedor")
+        self._round_manager.switch_state("Waiting")
         self._round_manager.switch_player()
 
         return True

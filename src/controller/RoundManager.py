@@ -95,8 +95,8 @@ class RoundManager:
     def receive_start(self, start_status: StartStatus):
         self._current_state.receive_start(start_status)
     
-    def receive_move(self):
-        self._current_state.receive_move()
+    def receive_move(self, a_move):
+        self._current_state.receive_move(a_move)
     
     def receive_withdrawal_notification(self):
         self._current_state.receive_withdrawal_notification()

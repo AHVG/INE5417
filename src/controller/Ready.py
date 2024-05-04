@@ -39,4 +39,4 @@ class Ready(State):
         print(f"player {start_status.get_players()}")
 
         self._set_players(start_status)
-        self._round_manager.switch_state("Playing")
+        self._round_manager.switch_state("Waiting")

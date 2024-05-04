@@ -104,11 +104,12 @@ class PlayerActor(DogPlayerInterface):
                     self._buttons[u_y][u_x][ttt_y][ttt_x].config(text=symbol)
 
     def connect_to_dog(self):
+        # Colocar no RoundManager (trocar o nome do RoundManager para algo mais coerente?)
         player_name = simpledialog.askstring(title="Player identifcation", prompt="Qual o seu nome?")
         self._dog_server: DogActor = DogActor()
         message = self._dog_server.initialize(player_name, self)
         messagebox.showinfo(message=message)
-        self._local_player.set_name(player_name) 
+        self._local_player.set_name(player_name)
 
     def reset(self):
         print("reset chamado")
@@ -132,9 +133,7 @@ class PlayerActor(DogPlayerInterface):
 
     def receive_move(self, a_move) -> None:
         print("receive_move chamado")
-        u_position = Coordinate(*a_move["position"]["u"])
-        ttt_position = Coordinate(*a_move["position"]["ttt"])
-        self._round_manager.receive_move(u_position, ttt_position)
+        self._round_manager.receive_move(a_move)
         self.update_gui()
 
     def receive_withdrawal_notification(self) -> None:
@@ -151,7 +150,12 @@ class PlayerActor(DogPlayerInterface):
             ttt_position (Coordinate): Coordenada no tabuleiro menor (Tic Tac Toe)
         """
         print("on_click_board chamado")
+
         if self._round_manager.put_marker(u_position, ttt_position):
-            self._dog_server.send_move({})
+            self._dog_server.send_move({
+                "u": (u_position.get_x(), u_position.get_y()),
+                "ttt": (ttt_position.get_x(), ttt_position.get_y()),
+                "match_status": "next",
+            })
         
         self.update_gui()
