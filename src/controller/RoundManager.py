@@ -1,11 +1,8 @@
+from tkinter import messagebox
+
 from dog.start_status import StartStatus
 
 from utils.Coordinate import Coordinate
-
-from controller.Ready import Ready
-from controller.Playing import Playing
-from controller.Waiting import Waiting
-from controller.GameOver import GameOver
 
 from model.Player import Player
 from model.Board import Board
@@ -40,13 +37,6 @@ class RoundManager:
         self._local_player: Player = local_player
         self._remote_player: Player = remote_player
         self._current_player: Player = None
-        self._current_state = Ready(self)
-        self._states = {
-            "Ready": Ready(self),
-            "Playing": Playing(self),
-            "Waiting": Waiting(self),
-            "GameOver": GameOver(self),
-        }
 
     def get_ultimate_tic_tac_toe(self) -> Board:
         return self._ultimate_tic_tac_toe
@@ -81,26 +71,20 @@ class RoundManager:
     def switch_player(self) -> None:
         self._current_player = self._remote_player if self._current_player.get_symbol() == self._local_player.get_symbol() else self._local_player
 
-    def switch_state(self, new_state) -> None:
-        print(f"Trocando de estado de {type(self._current_state)} para {self._states[new_state]}")
-        self._current_state.exit()
-        self.set_current_state(self._states[new_state])
-        self._current_state.entry()
-
     def reset(self):
-        self._current_state.reset()
+        messagebox.showinfo(message="Resetando jogo")
     
     def start_match(self, start_status: StartStatus):
-        self._current_state.start_match(start_status)
-    
+        messagebox.showinfo(message=start_status.get_message())
+
     def receive_start(self, start_status: StartStatus):
-        self._current_state.receive_start(start_status)
+        messagebox.showinfo(message=start_status.get_message())
     
     def receive_move(self, a_move):
-        self._current_state.receive_move(a_move)
+        messagebox.showinfo(message="Recebendo movimento")
     
     def receive_withdrawal_notification(self):
-        self._current_state.receive_withdrawal_notification()
+        messagebox.showinfo(message="Oponente desistiu")
 
     def put_marker(self, u_position: Coordinate, ttt_position: Coordinate) -> bool:
-        return self._current_state.put_marker(u_position, ttt_position)
+        messagebox.showinfo(message=f"Colocando marcador no tabuleiro {u_position} na posição {ttt_position}")

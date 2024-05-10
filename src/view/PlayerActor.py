@@ -52,7 +52,7 @@ class PlayerActor(DogPlayerInterface):
             Ator DOG que age sobre PlayerActor (receive_move, receive_start, receive_withdrawal_notification)
     """
 
-    def __init__(self, test=False) -> None:
+    def __init__(self) -> None:
         """
         Inicializa toda a aplicação: define o nome do player local; conecta-se com o DOG e cria tabuleiro
         """
@@ -75,7 +75,7 @@ class PlayerActor(DogPlayerInterface):
         self._remote_player_frame = self._ui_director.get_remote_player_frame()
         self._buttons = self._ui_director.get_buttons()
 
-        self.connect_to_dog(test)
+        self.connect_to_dog()
     
     def get_root(self):
         return self._root
@@ -120,17 +120,13 @@ class PlayerActor(DogPlayerInterface):
         self._local_player_frame.set_player_name(self._local_player.get_name())
         self._remote_player_frame.set_player_name(self._remote_player.get_name())
 
-    def connect_to_dog(self, test):
+    def connect_to_dog(self):
         # Colocar no RoundManager (trocar o nome do RoundManager para algo mais coerente?)
         self._dog_server: DogActor = DogActor()
-        
-        if not test:
-            player_name = simpledialog.askstring(title="Player identifcation", prompt="Qual o seu nome?")
-            message = self._dog_server.initialize(player_name, self)
-            messagebox.showinfo(message=message)
-        else:
-            player_name = "Jogador local"
-            message = self._dog_server.initialize(player_name, self)     
+
+        player_name = simpledialog.askstring(title="Player identifcation", prompt="Qual o seu nome?")
+        message = self._dog_server.initialize(player_name, self)
+        messagebox.showinfo(message=message)
 
         self._local_player.set_name(player_name)
         self.update_gui()

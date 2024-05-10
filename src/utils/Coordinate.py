@@ -27,3 +27,6 @@ class Coordinate:
     
     def set_y(self, new_y: float) -> None:
         self._y = new_y
+    
+    def __str__(self) -> str:
+        return f"Cordinate(x={self.get_x()}, y={self.get_y()})"
