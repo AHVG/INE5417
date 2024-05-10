@@ -6,6 +6,8 @@ from PIL import Image, ImageTk
 
 from utils.Coordinate import Coordinate
 
+from view.PlayerStatusFrame import PlayerStatusFrame
+
 
 class UIBuilder:
 
@@ -30,18 +32,20 @@ class UIBuilder:
         """
         Carrega as imagens para serem renderizadas quando necessário
         """
-        self._player_img: ImageTk.PhotoImage = ImageTk.PhotoImage(self.load_img("imgs/player_image.png", (300, 300)))
         self._red_x_bg_white: ImageTk.PhotoImage = ImageTk.PhotoImage(self.load_img("imgs/red_x_bg_white.png", (278, 242)))
         self._blue_o_bg_white: ImageTk.PhotoImage = ImageTk.PhotoImage(self.load_img("imgs/blue_o_bg_white.png", (278, 242)))
-
-    def get_player_img(self):
-        return self._player_img
     
     def get_red_x_bg_white(self):
         return self._red_x_bg_white
     
     def get_blue_o_bg_white(self):
         return self._blue_o_bg_white
+    
+    def get_local_player_frame(self):
+        return self._local_player_frame
+    
+    def get_remote_player_frame(self):
+        return self._remote_player_frame
 
     def get_buttons(self):
         return self._buttons
@@ -68,13 +72,10 @@ class UIBuilder:
 
         self.load_imgs()
 
-        label = tk.Label(self._player_status, image=self._player_img)
-        label.grid(row=0, column=0)
-        label.config(bg="white")
-
-        label = tk.Label(self._player_status, image=self._player_img)
-        label.grid(row=1, column=0)
-        label.config(bg="white")
+        self._local_player_frame = PlayerStatusFrame(self._player_status, "Jogador local", "imgs/player_image.png", bg="white")
+        self._local_player_frame.grid(column=0, row=0)
+        self._remote_player_frame = PlayerStatusFrame(self._player_status, "Jogador remoto", "imgs/player_image.png", bg="white")
+        self._remote_player_frame.grid(column=0, row=1)
 
     def build_board(self):
         self._board_frame: tk.Frame = tk.Frame(self._root, bg='white')
@@ -95,7 +96,7 @@ class UIBuilder:
                 buttons.append(buttons_line)
 
             return buttons
-    
+
         self._buttons: list[list[list[list[tk.Button]]]] = []
 
         for i, line in enumerate(self._player_actor._ultimate_ttt.get_childs()):

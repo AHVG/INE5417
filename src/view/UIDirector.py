@@ -20,6 +20,12 @@ class UIDirector:
     def get_blue_o_bg_white(self):
         return self._ui_builder.get_blue_o_bg_white()
 
+    def get_local_player_frame(self):
+        return self._ui_builder.get_local_player_frame()
+    
+    def get_remote_player_frame(self):
+        return self._ui_builder.get_remote_player_frame()
+
     def get_buttons(self):
         return self._ui_builder.get_buttons()
 
