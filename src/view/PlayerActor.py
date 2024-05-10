@@ -76,6 +76,9 @@ class PlayerActor(DogPlayerInterface):
         self._buttons = self._ui_director.get_buttons()
 
         self.connect_to_dog(test)
+    
+    def get_root(self):
+        return self._root
 
     def get_buttons(self):
         return self._buttons
@@ -121,9 +124,13 @@ class PlayerActor(DogPlayerInterface):
         # Colocar no RoundManager (trocar o nome do RoundManager para algo mais coerente?)
         self._dog_server: DogActor = DogActor()
         
-        player_name = simpledialog.askstring(title="Player identifcation", prompt="Qual o seu nome?")
-        message = self._dog_server.initialize(player_name, self)
-        messagebox.showinfo(message=message)
+        if not test:
+            player_name = simpledialog.askstring(title="Player identifcation", prompt="Qual o seu nome?")
+            message = self._dog_server.initialize(player_name, self)
+            messagebox.showinfo(message=message)
+        else:
+            player_name = "Jogador local"
+            message = self._dog_server.initialize(player_name, self)     
 
         self._local_player.set_name(player_name)
         self.update_gui()
