@@ -77,8 +77,16 @@ class RoundManager:
     def switch_player(self) -> None:
         self._current_player = self._remote_player if self._current_player.get_symbol() == self._local_player.get_symbol() else self._local_player
 
-    def set_game(self, start_status: StartStatus):
-        self.reset()
+    def put_marker(self, u_position, ttt_position):
+        # Verificar se é válido
+
+        # Atualizando o tabuleiro
+        ttt = self.get_ultimate_tic_tac_toe().get_childs()[u_position.get_y()][u_position.get_x()]
+        ttt.get_childs()[ttt_position.get_y()][ttt_position.get_x()].set_value(self.get_current_player().get_symbol())
+
+        self.switch_player()
+
+    def set_start(self, start_status: StartStatus):
 
         self._local_player.set_id(start_status.get_local_id())
         self._local_player.set_symbol("X")
@@ -90,17 +98,8 @@ class RoundManager:
         self._current_state = "playing" if start_status.get_players()[0][2] == "1" else "waiting_for_oponent"
         self._current_player = self._local_player if start_status.get_players()[0][2] == "1" else self._remote_player
 
-    def put_marker(self, u_position, ttt_position):
-        # Verificar se é válido
-
-        # Atualizando o tabuleiro
-        ttt = self.get_ultimate_tic_tac_toe().get_childs()[u_position.get_y()][u_position.get_x()]
-        ttt.get_childs()[ttt_position.get_y()][ttt_position.get_x()].set_value(self.get_current_player().get_symbol())
-
-        self.switch_player()
-
     def reset(self):
-        if self.get_current_state() == "gameover" or self.get_current_state() == "init":
+        if self.get_current_state() == "init" or self.get_current_state() == "gameover":
             self._ultimate_tic_tac_toe.reset()
             self._local_player.reset(name=self.get_local_player().get_name())
             self._remote_player.reset()
@@ -113,11 +112,12 @@ class RoundManager:
             messagebox.showinfo(message=start_status.get_message())
 
             if start_status.code == '2':
-                self.set_game(start_status)
+                self.set_start(start_status)
 
     def receive_start(self, start_status: StartStatus):
         if self.get_current_state() == "init" or self.get_current_state() == "gameover":
-            self.set_game(start_status)
+            self.reset()
+            self.set_start(start_status)
 
         messagebox.showinfo(message=start_status.get_message())
     
