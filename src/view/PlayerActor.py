@@ -59,7 +59,8 @@ class PlayerActor(DogPlayerInterface):
         self._ultimate_ttt: Board = UltimateTicTacToe()
         self._local_player: Player = Player("Jogador local", "X")
         self._remote_player: Player = Player("Jogador remoto", "O")
-        self._round_manager: RoundManager = RoundManager(self._ultimate_ttt, self._local_player, self._remote_player)
+        self._dog_server: DogActor = DogActor()
+        self._round_manager: RoundManager = RoundManager(self._ultimate_ttt, self._local_player, self._remote_player, self._dog_server)
 
         self._ui_builder = UIBuilder(self)
         self._ui_director = UIDirector(self._ui_builder)
@@ -121,9 +122,6 @@ class PlayerActor(DogPlayerInterface):
         self._remote_player_frame.set_player_name(self._remote_player.get_name())
 
     def connect_to_dog(self):
-        # Colocar no RoundManager (trocar o nome do RoundManager para algo mais coerente?)
-        self._dog_server: DogActor = DogActor()
-
         player_name = simpledialog.askstring(title="Player identifcation", prompt="Qual o seu nome?")
         message = self._dog_server.initialize(player_name, self)
         messagebox.showinfo(message=message)
@@ -142,8 +140,7 @@ class PlayerActor(DogPlayerInterface):
 
     def start_match(self) -> None:
         print("start_match chamado")
-        start_status = self._dog_server.start_match(2)
-        self._round_manager.start_match(start_status)
+        self._round_manager.start_match()
         self.update_gui()
 
     def receive_start(self, start_status: StartStatus) -> None:
@@ -170,12 +167,5 @@ class PlayerActor(DogPlayerInterface):
             ttt_position (Coordinate): Coordenada no tabuleiro menor (Tic Tac Toe)
         """
         print("on_click_board chamado")
-
-        if self._round_manager.put_marker(u_position, ttt_position):
-            self._dog_server.send_move({
-                "u": (u_position.get_x(), u_position.get_y()),
-                "ttt": (ttt_position.get_x(), ttt_position.get_y()),
-                "match_status": "next",
-            })
-        
+        self._round_manager.on_click_board(u_position, ttt_position)
         self.update_gui()
