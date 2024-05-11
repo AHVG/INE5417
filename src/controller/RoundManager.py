@@ -41,7 +41,7 @@ class RoundManager:
         self._local_player: Player = local_player
         self._remote_player: Player = remote_player
         self._current_player: Player = None
-        self._state = "init"
+        self._current_state = "init"
         self._dog_server = dog_server
 
     def get_ultimate_tic_tac_toe(self) -> Board:
@@ -69,7 +69,7 @@ class RoundManager:
         self._current_player = new_current_player
 
     def get_current_state(self):
-        return self._state
+        return self._current_state
 
     def set_current_state(self, current_state):
         self._current_state = current_state
@@ -89,26 +89,32 @@ class RoundManager:
         return True
 
     def set_start(self, start_status: StartStatus):
+        players = start_status.get_players()
+        local_id = start_status.get_local_id()
 
-        self._local_player.set_id(start_status.get_local_id())
+        self._local_player.set_id(local_id)
         self._local_player.set_symbol("X")
 
-        self._remote_player.set_name(start_status.get_players()[1][0])
-        self._remote_player.set_id(start_status.get_players()[1][1])
+        self._remote_player.set_name(players[1][0])
+        self._remote_player.set_id(players[1][1])
         self._remote_player.set_symbol("O")
 
-        self._current_state = "playing" if start_status.get_players()[0][2] == "1" else "waiting_for_oponent"
-        self._current_player = self._local_player if start_status.get_players()[0][2] == "1" else self._remote_player
+        if players[0][2] == "1":
+            self._current_state = "playing"
+            self._current_player = self._local_player
+        else:
+            self._current_state = "waiting_for_oponent"
+            self._current_player = self._remote_player
 
     def reset(self):
+        print(f"reset acionado no estado {self.get_current_state()}")
         if self.get_current_state() == "init" or self.get_current_state() == "gameover":
             self._ultimate_tic_tac_toe.reset()
             self._local_player.reset(name=self.get_local_player().get_name())
             self._remote_player.reset()
-
-        messagebox.showinfo(message="Resetando jogo")
     
     def start_match(self):
+        print(f"start_match acionado no estado {self.get_current_state()}")
         if self.get_current_state() == "init":
             start_status = self._dog_server.start_match(2)
             messagebox.showinfo(message=start_status.get_message())
@@ -117,6 +123,7 @@ class RoundManager:
                 self.set_start(start_status)
 
     def receive_start(self, start_status: StartStatus):
+        print(f"receive_start acionado no estado {self.get_current_state()}")
         if self.get_current_state() == "init" or self.get_current_state() == "gameover":
             self.reset()
             self.set_start(start_status)
@@ -124,9 +131,10 @@ class RoundManager:
         messagebox.showinfo(message=start_status.get_message())
     
     def receive_move(self, a_move):
+        print(f"receive_move acionado no estado {self.get_current_state()}")
         if self.get_current_state() == "waiting_for_oponent":
-            u_position = a_move
-            ttt_position = a_move
+            u_position = Coordinate(a_move["u"][0], a_move["u"][1])
+            ttt_position = Coordinate(a_move["ttt"][0], a_move["ttt"][1])
             
             if self.put_marker(u_position, ttt_position):
                 if self._ultimate_tic_tac_toe.check():
@@ -138,6 +146,8 @@ class RoundManager:
         messagebox.showinfo(message="Recebendo movimento")
     
     def receive_withdrawal_notification(self):
+        print(f"receive_withdrawal_notification acionado no estado {self.get_current_state()}")
+
         if self.get_current_state() == "playing" or self.get_current_state() == "wating_for_oponent":
             self.set_current_state("gameover")
             self._local_player.set_winner(True) # Colocar no documento que, quando alguem desiste, esta pessoa perde
@@ -145,6 +155,7 @@ class RoundManager:
         messagebox.showinfo(message="Oponente desistiu")
 
     def on_click_board(self, u_position: Coordinate, ttt_position: Coordinate) -> bool:
+        print(f"on_click_board acionado no estado {self.get_current_state()}")
         if self.get_current_state() == "playing":
             if self.put_marker(u_position, ttt_position):
                 
