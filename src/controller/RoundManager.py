@@ -86,6 +86,8 @@ class RoundManager:
 
         self.switch_player()
 
+        return True
+
     def set_start(self, start_status: StartStatus):
 
         self._local_player.set_id(start_status.get_local_id())
