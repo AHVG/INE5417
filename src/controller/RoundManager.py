@@ -115,7 +115,7 @@ class RoundManager:
 
     def put_marker(self, u_position: Coordinate, ttt_position: Coordinate):
         
-        if not self.verify_move_validity():
+        if not self.verify_move_validity(u_position, ttt_position):
             return False
 
         ttt = self.get_ultimate_tic_tac_toe().get_childs()[u_position.get_y()][u_position.get_x()]
