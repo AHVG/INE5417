@@ -51,7 +51,7 @@ class TestStartMatch(TKinterTestCase):
 
         mock_askstring.return_value = "Local player"
 
-        start_status = StartStatus("2", "A partida começou", [["123", "1", "1"], [str(random.randint(0, 10000)), "2", "2"]], "123")
+        start_status = StartStatus("2", "A partida começou", [["123", "1", "1"], ["Remote player " + str(random.randint(0, 10000)), "2", "2"]], "123")
         mock_instance = mock_dog_actor.return_value
         mock_instance.initialize.return_value = "Alo"
         mock_instance.start_match.return_value = start_status
@@ -84,7 +84,7 @@ class TestStartMatch(TKinterTestCase):
         self.local_actor.reset()
         self.pump_events()
 
-        start_status = StartStatus("2", "A partida começou", [["123", "1", "1"], [str(random.randint(0, 10000)), "2", "2"]], "123")
+        start_status = StartStatus("2", "A partida começou", [["123", "1", "1"], ["Remote player " + str(random.randint(0, 10000)), "2", "2"]], "123")
         mock_instance.start_match.return_value = start_status
 
         self.run_round(plays)
