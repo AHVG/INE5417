@@ -56,6 +56,18 @@ class Board:
             for element in line:
                 element.reset()
 
+    def is_completely_filled(self) -> bool:
+        filled_positions = 0
+        for line in self.get_childs():
+            for position in line:
+                if position.get_value():
+                    filled_positions += 1
+                    
+        if not filled_positions == SIZE_OF_BOARD * SIZE_OF_BOARD:
+            return False
+        
+        return True
+    
     def check_result(self) -> str:
         """
         Checa a vitória do tabuleiro. Se alguem venceu, então define value como o vencedor.
@@ -81,14 +93,7 @@ class Board:
                 print(f"Player {self.get_value()} won")
                 return region[0].get_value()
 
-        filled_positions = 0
-
-        for line in self.get_childs():
-            for position in line:
-                if position.get_value():
-                    filled_positions += 1
-
-        if filled_positions == SIZE_OF_BOARD * SIZE_OF_BOARD:
+        if self.is_completely_filled():
             self.set_value("-")
             return "-"
 
