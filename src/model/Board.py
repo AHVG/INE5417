@@ -64,7 +64,7 @@ class Board:
         if self.get_value():
             return self.get_value()
         
-        if not self._childs:
+        if not self.get_childs():
             return self.get_value()
 
         for line in self.get_childs():
@@ -74,7 +74,7 @@ class Board:
         regions = [*self.get_lines(), *self.get_columns(), *self.get_diagonals()]
 
         for region in regions:
-            if len(set(position.get_value() for position in region)) == 1 and region[0].get_value():
+            if len(set(map(lambda position: position.get_value(), region))) == 1 and region[0].get_value():
                 self.set_value(region[0].get_value())
                 print(f"Player {self.get_value()} won")
                 return region[0].get_value()
