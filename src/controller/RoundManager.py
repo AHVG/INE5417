@@ -119,7 +119,6 @@ class RoundManager:
             return False
 
         ttt = self.get_ultimate_tic_tac_toe().get_childs()[u_position.get_y()][u_position.get_x()]
-
         ttt.get_childs()[ttt_position.get_y()][ttt_position.get_x()].set_value(self.get_current_player().get_symbol())
 
         self.switch_player()
