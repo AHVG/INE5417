@@ -3,6 +3,8 @@ from utils.Constants import SIZE_OF_BOARD
 class Board: pass
 
 
+SYMBOLS = (None, "-", "X", "O")
+
 class Board:
     """
     Classe que representa tanto uma casa no tabuleiro quanto um tabuleiro padrão de jogo da velha e um Ultimate tabuleiro de jogo da velha
@@ -54,7 +56,7 @@ class Board:
             for element in line:
                 element.reset()
 
-    def check(self) -> str:
+    def check_result(self) -> str:
         """
         Checa a vitória do tabuleiro. Se alguem venceu, então define value como o vencedor.
 
@@ -69,14 +71,24 @@ class Board:
 
         for line in self.get_childs():
             for position in line:
-                position.check()
+                position.check_result()
 
         regions = [*self.get_lines(), *self.get_columns(), *self.get_diagonals()]
 
         for region in regions:
-            if len(set(map(lambda position: position.get_value(), region))) == 1 and region[0].get_value():
+            if len(set(map(lambda position: position.get_value(), region))) == 1 and region[0].get_value() in ("X", "O"):
                 self.set_value(region[0].get_value())
                 print(f"Player {self.get_value()} won")
                 return region[0].get_value()
+
+        filled_positions = 0
+
+        for line in self.get_childs():
+            for position in line:
+                if position.get_value():
+                    filled_positions += 1
+
+        if filled_positions == SIZE_OF_BOARD * SIZE_OF_BOARD:
+            self.set_value("-")
 
         return None

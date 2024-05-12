@@ -118,9 +118,9 @@ class PlayerActor(DogPlayerInterface):
         self._local_player.set_name(player_name)
         self.update_gui()
 
-    def reset(self):
+    def reset_game(self):
         print("reset chamado")
-        self._round_manager.reset()
+        self._round_manager.reset_game()
         self.update_gui()
         
     def quit(self):

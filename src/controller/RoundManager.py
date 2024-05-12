@@ -145,7 +145,7 @@ class RoundManager:
             self._current_state = "waiting_for_oponent"
             self._current_player = self._remote_player
 
-    def reset(self):
+    def reset_game(self):
         print(f"reset acionado no estado {self.get_current_state()}")
         if self.get_current_state() == "init" or self.get_current_state() == "gameover":
             self._ultimate_tic_tac_toe.reset()
@@ -165,7 +165,7 @@ class RoundManager:
     def receive_start(self, start_status: StartStatus):
         print(f"receive_start acionado no estado {self.get_current_state()}")
         if self.get_current_state() == "init" or self.get_current_state() == "gameover":
-            self.reset()
+            self.reset_game()
             self.set_start(start_status)
 
         messagebox.showinfo(message=start_status.get_message())
@@ -176,7 +176,7 @@ class RoundManager:
             u_position, ttt_position = self.convert_dict_to_coordinates(a_move)
             
             if self.put_marker(u_position, ttt_position):
-                if self._ultimate_tic_tac_toe.check():
+                if self._ultimate_tic_tac_toe.check_result():
                     self.set_current_state("gameover")
                     self._remote_player.set_winner(True)
                 else:
@@ -198,7 +198,7 @@ class RoundManager:
         if self.get_current_state() == "playing":
             if self.put_marker(u_position, ttt_position):
                 
-                if self._ultimate_tic_tac_toe.check():
+                if self._ultimate_tic_tac_toe.check_result():
                     self.set_current_state("gameover")
                     self._local_player.set_winner(True)
                 else:

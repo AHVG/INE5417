@@ -81,7 +81,7 @@ class TestStartMatch(TKinterTestCase):
         self.run_round(plays)
         time.sleep(5)
 
-        self.local_actor.reset()
+        self.local_actor.reset_game()
         self.pump_events()
 
         start_status = StartStatus("2", "A partida começou", [["123", "1", "1"], ["Remote player " + str(random.randint(0, 10000)), "2", "2"]], "123")
