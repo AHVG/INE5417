@@ -1,3 +1,5 @@
+import time
+import random
 import _tkinter
 import unittest
 
@@ -29,21 +31,18 @@ class TKinterTestCase(unittest.TestCase):
 class TestStartMatch(TKinterTestCase):
 
     def run_round(self, moves):
-        counter = 1
-
-        for move in moves:
+        self.local_actor.start_match()
+        
+        for i, move in enumerate(moves):
             u_move = (move[0][0], move[0][1])
             ttt_move = (move[1][0], move[1][1])
 
-            if counter % 2:
-                self.local_actor.start_match()
+            if (i + 1) % 2:
                 self.local_actor.get_buttons()[u_move[1]][u_move[0]][ttt_move[1]][ttt_move[0]].invoke()
                 self.pump_events()
             else:
                 self.local_actor.receive_move({"u": u_move, "ttt": ttt_move})
                 self.pump_events()
-
-            counter += 1
 
     @patch('controller.RoundManager.messagebox.showinfo')
     @patch('view.PlayerActor.simpledialog.askstring')
@@ -52,11 +51,9 @@ class TestStartMatch(TKinterTestCase):
 
         mock_askstring.return_value = "Local player"
 
+        start_status = StartStatus("2", "A partida começou", [["123", "1", "1"], [str(random.randint(0, 10000)), "2", "2"]], "123")
         mock_instance = mock_dog_actor.return_value
-
         mock_instance.initialize.return_value = "Alo"
-
-        start_status = StartStatus("2", "A partida começou", [["123", "1", "1"], ["321", "2", "2"]], "123")
         mock_instance.start_match.return_value = start_status
 
         self.local_actor = PlayerActor()
@@ -82,3 +79,13 @@ class TestStartMatch(TKinterTestCase):
                  ((1, 0), (1, 0))]
 
         self.run_round(plays)
+        time.sleep(5)
+
+        self.local_actor.reset()
+        self.pump_events()
+
+        start_status = StartStatus("2", "A partida começou", [["123", "1", "1"], [str(random.randint(0, 10000)), "2", "2"]], "123")
+        mock_instance.start_match.return_value = start_status
+
+        self.run_round(plays)
+        time.sleep(5)

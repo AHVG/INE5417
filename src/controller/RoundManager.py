@@ -151,6 +151,7 @@ class RoundManager:
             self._ultimate_tic_tac_toe.reset()
             self._local_player.reset(name=self.get_local_player().get_name())
             self._remote_player.reset()
+            self.set_current_state("init")
     
     def start_match(self):
         print(f"start_match acionado no estado {self.get_current_state()}")

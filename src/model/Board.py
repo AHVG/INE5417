@@ -47,7 +47,7 @@ class Board:
     def reset(self):
         self._value = None
 
-        if not self._childs:
+        if self._childs is None:
             return
 
         for line in self._childs:

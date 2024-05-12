@@ -93,7 +93,6 @@ class PlayerActor(DogPlayerInterface):
     def run(self):
         self._root.mainloop()
 
-    # Caso de uso?
     def update_gui(self) -> None:
         """
         Atualiza o estado da GUI após processamento da lógica do jogo
@@ -102,21 +101,11 @@ class PlayerActor(DogPlayerInterface):
         
         for u_coordinate in coordinates:
             u_x, u_y = u_coordinate.get_x(), u_coordinate.get_y()
-            if self._ultimate_ttt.get_childs()[u_y][u_x].get_value():
-                width = self._board_frame.children[f"{u_y}x{u_x}"].winfo_width()
-                height = self._board_frame.children[f"{u_y}x{u_x}"].winfo_height()
-
-                if self._ultimate_ttt.get_childs()[u_y][u_x].get_value() == "X":
-                    label = tk.Label(self._board_frame.children[f"{u_y}x{u_x}"], image=self._red_x_bg_white, width=width, height=height)
-                else:
-                    label = tk.Label(self._board_frame.children[f"{u_y}x{u_x}"], image=self._blue_o_bg_white, width=width, height=height)
-
-                label.place(relx=0.5, rely=0.5, anchor='center')
-            else:
-                for ttt_coordinate in coordinates:
-                    ttt_x, ttt_y = ttt_coordinate.get_x(), ttt_coordinate.get_y()
-                    symbol = self._ultimate_ttt.get_childs()[u_y][u_x].get_childs()[ttt_y][ttt_x].get_value()
-                    self._buttons[u_y][u_x][ttt_y][ttt_x].config(text=symbol)
+            for ttt_coordinate in coordinates:
+                ttt_x, ttt_y = ttt_coordinate.get_x(), ttt_coordinate.get_y()
+                symbol = self._ultimate_ttt.get_childs()[u_y][u_x].get_childs()[ttt_y][ttt_x].get_value()
+                symbol = "" if symbol is None else symbol
+                self._buttons[u_y][u_x][ttt_y][ttt_x].config(text=symbol)
         
         self._local_player_frame.set_player_name(self._local_player.get_name())
         self._remote_player_frame.set_player_name(self._remote_player.get_name())
