@@ -176,9 +176,13 @@ class RoundManager:
             u_position, ttt_position = self.convert_dict_to_coordinates(a_move)
             
             if self.put_marker(u_position, ttt_position):
-                if self._ultimate_tic_tac_toe.check_result():
+                result = self._ultimate_tic_tac_toe.check_result()
+
+                if result:
                     self.set_current_state("gameover")
-                    self._remote_player.set_winner(True)
+
+                    if result != "-":
+                        self._remote_player.set_winner(True)
                 else:
                     self.set_current_state("playing")
 
@@ -197,10 +201,13 @@ class RoundManager:
         print(f"on_click_board acionado no estado {self.get_current_state()}")
         if self.get_current_state() == "playing":
             if self.put_marker(u_position, ttt_position):
-                
-                if self._ultimate_tic_tac_toe.check_result():
+                result = self._ultimate_tic_tac_toe.check_result()
+
+                if result:
                     self.set_current_state("gameover")
-                    self._local_player.set_winner(True)
+
+                    if result != "-":
+                        self._local_player.set_winner(True)
                 else:
                     self.set_current_state("waiting_for_oponent")
 

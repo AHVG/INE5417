@@ -90,5 +90,6 @@ class Board:
 
         if filled_positions == SIZE_OF_BOARD * SIZE_OF_BOARD:
             self.set_value("-")
+            return "-"
 
         return None
