@@ -43,6 +43,7 @@ class RoundManager:
         self._current_player: Player = None
         self._current_state = "init"
         self._dog_server = dog_server
+        self._last_move = None
 
     def get_ultimate_tic_tac_toe(self) -> Board:
         return self._ultimate_tic_tac_toe
@@ -73,18 +74,57 @@ class RoundManager:
 
     def set_current_state(self, current_state):
         self._current_state = current_state
+    
+    def get_last_move(self) -> Coordinate:
+        return self._last_move
+    
+    def set_last_move(self, last_move: tuple):  # primeiro elemento é a coordenada do ultimate e o segundo é a coordenada do ttt
+        self._last_move = last_move
+
+    def convert_dict_to_coordinates(self, a_move: dict):
+        u_position = Coordinate(a_move["u"][0], a_move["u"][1])
+        ttt_position = Coordinate(a_move["ttt"][0], a_move["ttt"][1])
+        return u_position, ttt_position
 
     def switch_player(self) -> None:
         self._current_player = self._remote_player if self._current_player.get_symbol() == self._local_player.get_symbol() else self._local_player
 
-    def put_marker(self, u_position, ttt_position):
-        # Verificar se é válido
-
+    def verify_move_validity(self, u_position, ttt_position):
         # Atualizando o tabuleiro
+        last_move = self.get_last_move()
+
+        # Ou seja, se não for a primeira jogada verifica se é possível colocar marcador
+        if last_move:
+            _, previous_ttt_position = last_move
+
+            correct_ttt = self._ultimate_tic_tac_toe.get_childs()[previous_ttt_position.get_y()][previous_ttt_position.get_x()]
+
+            current_ttt = self._ultimate_tic_tac_toe.get_childs()[u_position.get_y()][u_position.get_x()]
+            current_position = current_ttt.get_childs()[ttt_position.get_y()][ttt_position.get_x()]
+
+            # Verifica se o ttt que o jogador deve jogar tem vencedor
+            if not correct_ttt.get_value():
+                if u_position != previous_ttt_position:
+                    return False
+
+            # Verificar se tem vencedor no ttt e se sua posição está ocupada
+            if current_ttt.get_value() or current_position.get_value():
+                return False
+
+        return True
+
+    def put_marker(self, u_position: Coordinate, ttt_position: Coordinate):
+        
+        if not self.verify_move_validity():
+            return False
+
         ttt = self.get_ultimate_tic_tac_toe().get_childs()[u_position.get_y()][u_position.get_x()]
+
         ttt.get_childs()[ttt_position.get_y()][ttt_position.get_x()].set_value(self.get_current_player().get_symbol())
 
         self.switch_player()
+
+        self._last_ttt_position = (u_position, ttt_position)
 
         return True
 
@@ -133,8 +173,7 @@ class RoundManager:
     def receive_move(self, a_move):
         print(f"receive_move acionado no estado {self.get_current_state()}")
         if self.get_current_state() == "waiting_for_oponent":
-            u_position = Coordinate(a_move["u"][0], a_move["u"][1])
-            ttt_position = Coordinate(a_move["ttt"][0], a_move["ttt"][1])
+            u_position, ttt_position = self.convert_dict_to_coordinates(a_move)
             
             if self.put_marker(u_position, ttt_position):
                 if self._ultimate_tic_tac_toe.check():
