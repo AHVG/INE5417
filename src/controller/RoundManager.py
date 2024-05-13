@@ -196,6 +196,7 @@ class RoundManager:
         if self.get_current_state() == "playing" or self.get_current_state() == "wating_for_oponent":
             self.set_current_state("gameover")
             self._local_player.set_winner(True) # Colocar no documento que, quando alguem desiste, esta pessoa perde
+            self._ultimate_tic_tac_toe.set_value(self._local_player.get_symbol())
 
         messagebox.showinfo(message="Oponente desistiu")
 
