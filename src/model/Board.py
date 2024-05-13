@@ -1,7 +1,9 @@
-from Constants import SIZE_OF_BOARD
+from utils.Constants import SIZE_OF_BOARD
 
 class Board: pass
 
+
+SYMBOLS = (None, "-", "X", "O")
 
 class Board:
     """
@@ -19,13 +21,13 @@ class Board:
         """
         Inicializa um tabuleiro como se fosse uma casa por padrão
         """
-        self._childs: list[list[Board]] = []
+        self._childs: list[list[Board]] = None
         self._value: str = None
 
-    def get_childs(self) -> list[list[Board]]:
+    def get_childs(self):
         return self._childs
     
-    def set_childs(self, new_childs: list[list[Board]]) -> None:
+    def set_childs(self, new_childs) -> None:
         self._childs = new_childs
 
     def get_value(self) -> str:
@@ -34,17 +36,39 @@ class Board:
     def set_value(self, new_value: str) -> None:
         self._value = new_value
 
-    def get_lines(self) -> list[Board]:
+    def get_lines(self):
         return [line[:] for line in self._childs]
 
-    def get_columns(self) -> list[Board]:
+    def get_columns(self):
         return [[self._childs[i][j] for i in range(SIZE_OF_BOARD)] for j in range(SIZE_OF_BOARD)]
 
-    def get_diagonals(self) -> list[Board]:
+    def get_diagonals(self):
         return [[self._childs[i][i] for i in range(SIZE_OF_BOARD)],
                 [self._childs[j][i] for j, i in zip(list(range(SIZE_OF_BOARD)), list(range(SIZE_OF_BOARD - 1, -1, -1)))]]
 
-    def check(self) -> str:
+    def reset(self):
+        self._value = None
+
+        if not self._childs:
+            return
+
+        for line in self._childs:
+            for element in line:
+                element.reset()
+
+    def is_completely_filled(self) -> bool:
+        filled_positions = 0
+        for line in self.get_childs():
+            for position in line:
+                if position.get_value():
+                    filled_positions += 1
+                    
+        if not filled_positions == SIZE_OF_BOARD * SIZE_OF_BOARD:
+            return False
+        
+        return True
+    
+    def check_result(self) -> str:
         """
         Checa a vitória do tabuleiro. Se alguem venceu, então define value como o vencedor.
 
@@ -54,19 +78,23 @@ class Board:
         if self.get_value():
             return self.get_value()
         
-        if not self._childs:
+        if not self.get_childs():
             return self.get_value()
 
         for line in self.get_childs():
             for position in line:
-                position.check()
+                position.check_result()
 
         regions = [*self.get_lines(), *self.get_columns(), *self.get_diagonals()]
 
         for region in regions:
-            if len(set([position.get_value() for position in region])) == 1 and region[0].get_value():
+            if len(set(map(lambda position: position.get_value(), region))) == 1 and region[0].get_value() in ("X", "O"):
                 self.set_value(region[0].get_value())
                 print(f"Player {self.get_value()} won")
                 return region[0].get_value()
+
+        if self.is_completely_filled():
+            self.set_value("-")
+            return "-"
 
         return None
