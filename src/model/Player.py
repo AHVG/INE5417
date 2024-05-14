@@ -57,7 +57,7 @@ class Player:
     
     def reset(self, name: str = "", id: str = "", symbol: str = "", is_turn: bool = False, winner: bool = False):
         self._name: str = name
-        self._id = id
+        self._id: str = id
         self._symbol: str = symbol
         self._is_turn: bool = is_turn
         self._winner: bool = winner
