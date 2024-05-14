@@ -30,3 +30,6 @@ class Coordinate:
     
     def __str__(self) -> str:
         return f"Cordinate(x={self.get_x()}, y={self.get_y()})"
+
+    def __eq__(self, other) -> bool:
+        return self.get_x() == other.get_x() and self.get_y() == other.get_y()

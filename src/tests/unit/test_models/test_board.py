@@ -31,14 +31,17 @@ class TestBoard(unittest.TestCase):
         
         self.assertTrue(self.board.is_completely_filled(), "Board should be completely filled")
 
-    def test_check_result(self):
-        self.board.set_childs([[Board() for _ in range(SIZE_OF_BOARD)] for _ in range(SIZE_OF_BOARD)])
-        
-        for i in range(SIZE_OF_BOARD):
-            self.board.get_childs()[i][0].set_value("X")
-        
+    def test_check_result_without_result(self):
         self.board.check_result()
-        self.assertEqual(self.board.get_value(), "X", "X should win with a vertical line")
+        self.assertEqual(self.board.check_result(), None, "Result should be None")
+
+    def test_check_result_with_result(self):
+        self.board.set_value("X")
+        self.assertEqual(self.board.check_result(), "X", "Result should be X")
+
+    def test_draw(self):
+        self.board.set_value("-")
+        self.assertEqual(self.board.check_result(), "-", "Result should be -")
 
 if __name__ == '__main__':
     unittest.main()
