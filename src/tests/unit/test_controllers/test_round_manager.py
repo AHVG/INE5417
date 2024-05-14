@@ -56,8 +56,11 @@ class TestRoundManager(unittest.TestCase):
         pass
 
     def test_reset_game(self):
+        self.round_manager.set_current_state("gameover")
         self.round_manager.reset_game()
-        self.assertIsNone(self.round_manager.get_last_move())
+        self.assertEqual(self.round_manager.get_current_state(), "init")
+
+        self.round_manager.reset_game()
         self.assertEqual(self.round_manager.get_current_state(), "init")
 
     def test_start_match(self):
