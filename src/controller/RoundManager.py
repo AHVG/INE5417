@@ -104,7 +104,7 @@ class RoundManager:
 
             # Verifica se o ttt que o jogador deve jogar tem vencedor
             if not correct_ttt.get_value():
-                if (u_position.get_x() != previous_ttt_position.get_x()) or (u_position.get_y() != previous_ttt_position.get_y()):
+                if u_position != previous_ttt_position:
                     return False
 
             # Verificar se tem vencedor no ttt e se sua posição está ocupada
@@ -128,6 +128,7 @@ class RoundManager:
         return True
 
     def set_start(self, start_status: StartStatus):
+        # TODO: Arrumar o id do player local (possivelmente vai ter que alterar os testes)
         self._last_move = None
 
         players = start_status.get_players()

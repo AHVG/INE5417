@@ -95,6 +95,7 @@ class Board:
 
         if self.is_completely_filled():
             self.set_value("-")
+            print(f"Draw")
             return "-"
 
         return None
