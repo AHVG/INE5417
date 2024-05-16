@@ -4,6 +4,8 @@ import unittest
 
 from unittest.mock import patch
 
+from generate_game import generate_game
+
 from dog.start_status import StartStatus
 
 from view.PlayerActor import PlayerActor
@@ -26,7 +28,7 @@ class TKinterTestCase(unittest.TestCase):
         while self.root.dooneevent(_tkinter.ALL_EVENTS | _tkinter.DONT_WAIT):
             pass
 
-class TestStartMatch(TKinterTestCase):
+class TestFlow(TKinterTestCase):
 
     def run_round(self, moves):
         self.local_actor.start_match()
@@ -91,8 +93,7 @@ class TestStartMatch(TKinterTestCase):
         self.run_round(plays)
         self.pump_events()
 
-        import time
-        time.sleep(60)
+        self.local_actor.reset_game()
 
     @patch('controller.RoundManager.messagebox.showinfo')
     @patch('view.PlayerActor.simpledialog.askstring')
@@ -144,8 +145,69 @@ class TestStartMatch(TKinterTestCase):
         self.run_round(plays)
         self.pump_events()
 
-    def test_when_the_game_ends_in_a_draw(self):
-        self.root = None
+        self.local_actor.reset_game()
 
-    def test_when_playing_more_than_once(self):
-        self.root = None
+    @patch('controller.RoundManager.messagebox.showinfo')
+    @patch('view.PlayerActor.simpledialog.askstring')
+    @patch('view.PlayerActor.DogActor')
+    def test_when_the_game_ends_in_a_draw(self, mock_dog_actor, mock_askstring, mock_showinfo):
+
+        mock_askstring.return_value = "Local player"
+
+        start_status = StartStatus("2", "A partida começou", [["123", "1", "1"], ["Remote player " + str(random.randint(0, 10000)), "2", "2"]], "123")
+        mock_instance = mock_dog_actor.return_value
+        mock_instance.initialize.return_value = "Alo"
+        mock_instance.start_match.return_value = start_status
+
+        self.local_actor = PlayerActor()
+        self.root = self.local_actor.get_root()
+        self.pump_events()
+
+        # X__  __O  OXO
+        # X_O  OXO  XXO
+        # XXO  O_O  OOX
+
+        # XX_  OXO  __X
+        # ___  OOX  OXO
+        # OOO  XXO  XO_
+
+        # OXX  XO_  XXO
+        # _OX  XXX  XOX
+        # _OO  XO_  XOX
+
+        plays = [((2, 2), (0, 1)), ((0, 1), (1, 2)), ((1, 2), (0, 0)), ((0, 0), (2, 2)), ((2, 2), (0, 2)), ((0, 2), (1, 2)), ((1, 2), (1, 1)), ((1, 1), (2, 0)), ((2, 0), (0, 1)), ((0, 1), (0, 2)), ((0, 2), (2, 0)), ((2, 0), (0, 0)), ((0, 0), (1, 2)), ((1, 2), (1, 0)), ((1, 0), (1, 1)), ((1, 1), (0, 1)), ((0, 1), (1, 0)), ((1, 0), (0, 2)), ((0, 2), (1, 0)), ((1, 0), (2, 1)), ((2, 1), (2, 0)), ((2, 0), (0, 2)), ((0, 2), (2, 1)), ((2, 1), (0, 1)), ((0, 1), (0, 0)), ((0, 0), (2, 1)), ((2, 1), (1, 1)), ((1, 1), (1, 1)), ((1, 1), (2, 1)), ((2, 1), (1, 2)), ((1, 2), (2, 1)), ((2, 1), (2, 1)), ((2, 1), (0, 2)), ((0, 2), (0, 0)), ((0, 0), (0, 2)), ((0, 2), (2, 2)), ((2, 2), (2, 2)), ((2, 2), (1, 2)), ((1, 2), (0, 2)), ((0, 2), (1, 1)), ((1, 1), (1, 2)), ((1, 2), (1, 2)), ((1, 2), (0, 1)), ((0, 1), (2, 2)), ((2, 2), (1, 0)), ((1, 0), (2, 0)), ((2, 0), (1, 1)), ((1, 1), (0, 0)), ((0, 0), (0, 1)), ((2, 2), (2, 0)), ((2, 0), (2, 2)), ((2, 2), (1, 1)), ((1, 1), (1, 0)), ((1, 0), (0, 1)), ((0, 0), (0, 0)), ((1, 0), (2, 2)), ((2, 2), (2, 1)), ((2, 0), (2, 0)), ((2, 0), (1, 0)), ((2, 0), (1, 2)), ((1, 1), (0, 2)), ((2, 0), (2, 1)), ((2, 2), (0, 0)), ((1, 1), (2, 2))]
+
+        self.run_round(plays)
+        self.pump_events()
+
+        self.local_actor.reset_game()
+
+    @patch('controller.RoundManager.messagebox.showinfo')
+    @patch('view.PlayerActor.simpledialog.askstring')
+    @patch('view.PlayerActor.DogActor')
+    def test_when_playing_more_than_once(self, mock_dog_actor, mock_askstring, mock_showinfo):
+        
+        mock_askstring.return_value = "Local player"
+
+        start_status = StartStatus("2", "A partida começou", [["123", "1", "1"], ["Remote player " + str(random.randint(0, 10000)), "2", "2"]], "123")
+        mock_instance = mock_dog_actor.return_value
+        mock_instance.initialize.return_value = "Alo"
+        mock_instance.start_match.return_value = start_status
+
+        self.local_actor = PlayerActor()
+        self.root = self.local_actor.get_root()
+        self.pump_events()
+
+        plays, _ = generate_game()
+
+        self.run_round(plays)
+        self.pump_events()
+
+        self.local_actor.reset_game()
+
+        plays, _ = generate_game()
+
+        self.run_round(plays)
+        self.pump_events()
+
+        self.local_actor.reset_game()
