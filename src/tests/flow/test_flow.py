@@ -10,6 +10,8 @@ from dog.start_status import StartStatus
 
 from view.PlayerActor import PlayerActor
 
+from utils.Constants import SIZE_OF_BOARD
+
 import unittest
 
 
@@ -204,6 +206,23 @@ class TestFlow(TKinterTestCase):
         self.pump_events()
 
         self.local_actor.reset_game()
+
+        start_status = StartStatus("2", "A partida começou", [["123", "1", "1"], ["Remote player " + str(random.randint(0, 10000)), "2", "2"]], "123")
+        mock_instance = mock_dog_actor.return_value
+        mock_instance.initialize.return_value = "Alo"
+        mock_instance.start_match.return_value = start_status
+
+        plays, _ = generate_game()
+
+        self.run_round(plays)
+        self.pump_events()
+
+        self.local_actor.reset_game()
+
+        start_status = StartStatus("2", "A partida começou", [["123", "1", "1"], ["Remote player " + str(random.randint(0, 10000)), "2", "2"]], "123")
+        mock_instance = mock_dog_actor.return_value
+        mock_instance.initialize.return_value = "Alo"
+        mock_instance.start_match.return_value = start_status
 
         plays, _ = generate_game()
 
