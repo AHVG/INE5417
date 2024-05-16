@@ -18,12 +18,12 @@ class TestRoundManager(unittest.TestCase):
     def setUp(self):
         # Mocking dependencies
         self.board = UltimateTicTacToe()
-        self.local_player = Player(name="Local Player", id="1", symbol="X")
-        self.remote_player = Player(name="Remote Player", id="2", symbol="O")
+        self.local_player = Player(name="Local player", id="1", symbol="X")
+        self.remote_player = Player(name="1", id="2", symbol="O")
         self.dog_actor = MagicMock(spec=DogActor)
 
-        start_status = StartStatus("2", "A partida começou", [["Local player", "1", "1"], ["Remote player", "2", "2"]], "123")
         self.dog_actor.initialize.return_value = "Alo"
+        start_status = StartStatus("2", "A partida começou", [["Local player", "1", "1"], ["Remote player", "2", "2"]], "123")
         self.dog_actor.start_match.return_value = start_status
 
         # RoundManager instance
@@ -90,14 +90,14 @@ class TestRoundManager(unittest.TestCase):
         self.assertEqual((Coordinate(1, 1), Coordinate(2, 2)), self.round_manager.get_last_move())
 
     def test_set_start(self):
-        start_status = StartStatus("2", "A partida começou", [["Local player 123", "123123", "1"], ["Remote Player 234", "234234", "2"]], "987654321")
+        start_status = StartStatus("2", "A partida começou", [["Local player 123", "123123", "1"], ["Remote player 234", "234234", "2"]], "987654321")
         self.round_manager.set_start(start_status)
 
-        self.assertEqual(self.local_player.get_name(), "Local Player")
+        self.assertEqual(self.local_player.get_name(), "Local player")
         self.assertEqual(self.local_player.get_id(), "987654321")
         self.assertEqual(self.local_player.get_symbol(), "X")
         
-        self.assertEqual(self.remote_player.get_name(), "Remote Player 234")
+        self.assertEqual(self.remote_player.get_name(), "Remote player 234")
         self.assertEqual(self.remote_player.get_id(), "234234")
         self.assertEqual(self.remote_player.get_symbol(), "O")
 
@@ -114,13 +114,56 @@ class TestRoundManager(unittest.TestCase):
         self.assertEqual(self.round_manager.get_current_state(), "init")
 
     def test_start_match(self):
-        pass
+        self.round_manager.start_match()
+
+        self.assertEqual(self.round_manager.get_current_state(), "playing")
+
+        self.assertEqual(self.local_player.get_name(), "Local player")
+        self.assertEqual(self.local_player.get_id(), "123")
+        self.assertEqual(self.local_player.get_symbol(), "X")
+        
+        self.assertEqual(self.remote_player.get_name(), "Remote player")
+        self.assertEqual(self.remote_player.get_id(), "2")
+        self.assertEqual(self.remote_player.get_symbol(), "O")
+
+        self.assertIs(self.round_manager.get_last_move(), None)
 
     def test_receive_start(self):
-        pass
+        start_status = StartStatus("2", "A partida começou", [["Local player", "1", "2"], ["Guest123321", "2", "1"]], "321")
+        self.round_manager.receive_start(start_status)
+
+        self.assertEqual(self.round_manager.get_current_state(), "waiting_for_oponent")
+
+        self.assertEqual(self.local_player.get_name(), "Local player")
+        self.assertEqual(self.local_player.get_id(), "321")
+        self.assertEqual(self.local_player.get_symbol(), "X")
+        
+        self.assertEqual(self.remote_player.get_name(), "Guest123321")
+        self.assertEqual(self.remote_player.get_id(), "2")
+        self.assertEqual(self.remote_player.get_symbol(), "O")
+
+        self.assertIs(self.round_manager.get_last_move(), None)
 
     def test_receive_move(self):
-        pass
+        start_status = StartStatus("2", "A partida começou", [["Local player", "1", "2"], ["Guest123321", "2", "1"]], "321")
+        self.round_manager.receive_start(start_status)
+
+        a_move = {"u": (0, 0), "ttt": (2, 2)}
+        self.round_manager.receive_move(a_move)
+
+        self.assertEqual(self.round_manager.get_current_state(), "playing")
+
+    def test_receive_move_gameover(self):
+        start_status = StartStatus("2", "A partida começou", [["Local player", "1", "2"], ["Guest123321", "2", "1"]], "321")
+        self.round_manager.receive_start(start_status)
+
+        self.board.set_value("O")
+        a_move = {"u": (0, 0), "ttt": (2, 2)}
+        self.round_manager.receive_move(a_move)
+
+        self.assertEqual(self.round_manager.get_current_state(), "gameover")
+        self.assertEqual(self.local_player.get_winner(), False)
+        self.assertEqual(self.remote_player.get_winner(), True)
 
     def test_receive_withdrawal_notification(self):
         self.round_manager.set_current_state("playing")
@@ -136,7 +179,19 @@ class TestRoundManager(unittest.TestCase):
         self.assertEqual(self.remote_player.get_winner(), False, "Remote player should not be the winner")
 
     def test_on_click_board(self):
-        pass
+        self.round_manager.start_match()
+
+        self.round_manager.on_click_board(Coordinate(1, 1), Coordinate(1, 1))
+        self.assertEqual(self.round_manager.get_current_state(), "waiting_for_oponent")
+
+    def test_on_click_board_gameover(self):
+        self.round_manager.start_match()
+        self.board.set_value("-")
+        self.round_manager.on_click_board(Coordinate(1, 1), Coordinate(1, 1))
+        self.assertEqual(self.round_manager.get_current_state(), "gameover")
+
+        self.assertEqual(self.local_player.get_winner(), False)
+        self.assertEqual(self.remote_player.get_winner(), False)
 
 
 if __name__ == '__main__':
