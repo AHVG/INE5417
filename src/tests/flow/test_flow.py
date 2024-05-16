@@ -1,4 +1,3 @@
-import time
 import random
 import _tkinter
 import unittest
@@ -27,7 +26,6 @@ class TKinterTestCase(unittest.TestCase):
         while self.root.dooneevent(_tkinter.ALL_EVENTS | _tkinter.DONT_WAIT):
             pass
 
-
 class TestStartMatch(TKinterTestCase):
 
     def run_round(self, moves):
@@ -47,7 +45,7 @@ class TestStartMatch(TKinterTestCase):
     @patch('controller.RoundManager.messagebox.showinfo')
     @patch('view.PlayerActor.simpledialog.askstring')
     @patch('view.PlayerActor.DogActor')
-    def test_playing(self, mock_dog_actor, mock_askstring, mock_showinfo):
+    def test_when_the_game_local_player_wins(self, mock_dog_actor, mock_askstring, mock_showinfo):
 
         mock_askstring.return_value = "Local player"
 
@@ -79,11 +77,13 @@ class TestStartMatch(TKinterTestCase):
                  ((1, 0), (1, 0))]
 
         self.run_round(plays)
-
-        self.local_actor.reset_game()
         self.pump_events()
 
-        start_status = StartStatus("2", "A partida começou", [["123", "1", "1"], ["Remote player " + str(random.randint(0, 10000)), "2", "2"]], "123")
-        mock_instance.start_match.return_value = start_status
+    def test_when_the_game_remote_player_wins(self):
+        pass
 
-        self.run_round(plays)
+    def test_when_the_game_ends_in_a_draw(self):
+        pass
+
+    def test_when_playing_more_than_once(self):
+        pass
