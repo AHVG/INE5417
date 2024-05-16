@@ -31,6 +31,9 @@ class TKinterTestCase(unittest.TestCase):
             pass
 
 class TestFlow(TKinterTestCase):
+    # TODO: usar thread para simular o jogador remoto?
+    # TODO: Adicionar comparação de tabuleiro?
+    # TODO: Criar outra classe para outros testes?
 
     def run_round(self, moves):
         self.local_actor.start_match()
