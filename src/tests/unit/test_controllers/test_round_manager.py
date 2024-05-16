@@ -51,13 +51,59 @@ class TestRoundManager(unittest.TestCase):
         self.assertIs(self.round_manager.get_current_player(), self.local_player)
 
     def test_verify_move_validity(self):
-        pass
+        # Primeiro movimento
+        self.assertEqual(self.round_manager.verify_move_validity(Coordinate(1, 1), Coordinate(0, 1)), True)
+
+        # Movimento no tabuleiro correto vazio
+        self.round_manager.set_last_move((Coordinate(2, 1), Coordinate(1, 1)))
+        self.assertEqual(self.round_manager.verify_move_validity(Coordinate(1, 1), Coordinate(0, 1)), True)
+
+        # Movimento no tabuleiro, mas com posição preenchida
+        self.round_manager.set_last_move((Coordinate(2, 1), Coordinate(1, 1)))
+        self.round_manager.get_ultimate_tic_tac_toe().get_childs()[1][1].get_childs()[1][0].set_value("X")
+        self.assertEqual(self.round_manager.verify_move_validity(Coordinate(1, 1), Coordinate(0, 1)), False)
+
+        # Movimento em um tabuleiro diferente, mas com o tabuleiro correto cheio
+        self.round_manager.set_last_move((Coordinate(2, 1), Coordinate(1, 2)))
+        self.round_manager.get_ultimate_tic_tac_toe().get_childs()[2][1].set_value("O")
+        self.assertEqual(self.round_manager.verify_move_validity(Coordinate(0, 2), Coordinate(0, 1)), True)
 
     def test_put_marker(self):
-        pass
+        self.round_manager.set_current_player(self.local_player)
+
+        # O jogador local joga
+        self.assertEqual(self.round_manager.put_marker(Coordinate(2, 0), Coordinate(1, 1)), True)
+        self.assertEqual(self.round_manager.get_ultimate_tic_tac_toe().get_childs()[0][2].get_childs()[1][1].get_value(), "X")
+        self.assertEqual(self.round_manager.get_current_player().get_symbol(), "O")
+        self.assertEqual((Coordinate(2, 0), Coordinate(1, 1)), self.round_manager.get_last_move())
+
+        # O jogador remoto joga
+        self.assertEqual(self.round_manager.put_marker(Coordinate(1, 1), Coordinate(2, 2)), True)
+        self.assertEqual(self.round_manager.get_ultimate_tic_tac_toe().get_childs()[1][1].get_childs()[2][2].get_value(), "O")
+        self.assertEqual(self.round_manager.get_current_player().get_symbol(), "X")
+        self.assertEqual((Coordinate(1, 1), Coordinate(2, 2)), self.round_manager.get_last_move())
+
+        # O jogador local joga, porém numa posição inválida
+        self.assertEqual(self.round_manager.put_marker(Coordinate(1, 1), Coordinate(2, 2)), False)
+        self.assertEqual(self.round_manager.get_ultimate_tic_tac_toe().get_childs()[1][1].get_childs()[2][2].get_value(), "O")
+        self.assertEqual(self.round_manager.get_current_player().get_symbol(), "X")
+        self.assertEqual((Coordinate(1, 1), Coordinate(2, 2)), self.round_manager.get_last_move())
 
     def test_set_start(self):
-        pass
+        start_status = StartStatus("2", "A partida começou", [["Local player 123", "123123", "1"], ["Remote Player 234", "234234", "2"]], "987654321")
+        self.round_manager.set_start(start_status)
+
+        self.assertEqual(self.local_player.get_name(), "Local Player")
+        self.assertEqual(self.local_player.get_id(), "987654321")
+        self.assertEqual(self.local_player.get_symbol(), "X")
+        
+        self.assertEqual(self.remote_player.get_name(), "Remote Player 234")
+        self.assertEqual(self.remote_player.get_id(), "234234")
+        self.assertEqual(self.remote_player.get_symbol(), "O")
+
+        self.assertIs(self.round_manager.get_last_move(), None)
+
+        self.assertEqual(self.round_manager.get_current_state(), "playing")
 
     def test_reset_game(self):
         self.round_manager.set_current_state("gameover")

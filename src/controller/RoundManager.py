@@ -128,6 +128,7 @@ class RoundManager:
         return True
 
     def set_start(self, start_status: StartStatus):
+        # TODO: Arrumar o id do player local (possivelmente vai ter que alterar os testes)
         self._last_move = None
 
         players = start_status.get_players()

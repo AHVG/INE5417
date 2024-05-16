@@ -79,7 +79,6 @@ class TestStartMatch(TKinterTestCase):
                  ((1, 0), (1, 0))]
 
         self.run_round(plays)
-        time.sleep(5)
 
         self.local_actor.reset_game()
         self.pump_events()
@@ -88,4 +87,3 @@ class TestStartMatch(TKinterTestCase):
         mock_instance.start_match.return_value = start_status
 
         self.run_round(plays)
-        time.sleep(5)
