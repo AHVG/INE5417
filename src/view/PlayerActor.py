@@ -78,6 +78,15 @@ class PlayerActor(DogPlayerInterface):
 
         self.connect_to_dog()
     
+    def get_ultimate_tic_tac_toe(self):
+        return self._ultimate_ttt
+    
+    def get_local_player(self):
+        return self._local_player
+    
+    def get_remote_player(self):
+        return self._remote_player
+
     def get_root(self):
         return self._root
 
@@ -103,13 +112,13 @@ class PlayerActor(DogPlayerInterface):
             for y in range(SIZE_OF_BOARD):
                 coordinates.append(Coordinate(x, y))
         
-        for u_coordinate in coordinates:
-            u_x = u_coordinate.get_x()
-            u_y = u_coordinate.get_y()
+        for i in range(0, 9):
+            u_x = coordinates[i].get_x()
+            u_y = coordinates[i].get_y()
 
-            for ttt_coordinate in coordinates:
-                ttt_x = ttt_coordinate.get_x()
-                ttt_y = ttt_coordinate.get_y()
+            for j in range(0, 9):
+                ttt_x = coordinates[j].get_x()
+                ttt_y = coordinates[j].get_y()
 
                 tic_tac_toes = self._ultimate_ttt.get_childs()
                 tic_tac_toe = tic_tac_toes[u_y][u_x]

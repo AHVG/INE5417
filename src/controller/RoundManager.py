@@ -24,8 +24,6 @@ class RoundManager:
             Player local (o que interage com a interface)
         _remote_player : Player
             Player remoto (O que envia movimentos para o player local ou o que envia proposta de início de partida)
-        _current_player : Player
-            Player que está atualmente jogando
     """
     
     def __init__(self, ultimate_tic_tac_toe: Board, local_player: Player, remote_player: Player, dog_server: DogActor) -> None:
@@ -40,7 +38,6 @@ class RoundManager:
         self._ultimate_tic_tac_toe: Board = ultimate_tic_tac_toe
         self._local_player: Player = local_player
         self._remote_player: Player = remote_player
-        self._current_player: Player = None
         self._current_state = "init"
         self._dog_server = dog_server
         self._last_move = None
@@ -63,12 +60,6 @@ class RoundManager:
     def set_remote_player(self, new_remote_player: Player) -> None:
         self._remote_player = new_remote_player
 
-    def get_current_player(self) -> Player:
-        return self._current_player
-    
-    def set_current_player(self, new_current_player: Player) -> None:
-        self._current_player = new_current_player
-
     def get_current_state(self):
         return self._current_state
 
@@ -86,11 +77,12 @@ class RoundManager:
         ttt_position = Coordinate(a_move["ttt"][0], a_move["ttt"][1])
         return u_position, ttt_position
 
-    def switch_player(self) -> None:
-        if self._current_player.get_symbol() == self._local_player.get_symbol():
-            self.set_current_player(self._remote_player)
-        else:
-            self.set_current_player(self._local_player)
+    def toogle_player(self) -> None:
+        local_player = self.get_local_player()
+        remote_player = self.get_remote_player()
+
+        local_player.toogle_turn()
+        remote_player.toogle_turn()
 
     def verify_move_validity(self, u_position, ttt_position):
         # Atualizando o tabuleiro
@@ -121,10 +113,30 @@ class RoundManager:
         if not self.verify_move_validity(u_position, ttt_position):
             return False
 
-        ttt = self.get_ultimate_tic_tac_toe().get_childs()[u_position.get_y()][u_position.get_x()]
-        ttt.get_childs()[ttt_position.get_y()][ttt_position.get_x()].set_value(self.get_current_player().get_symbol())
+        u_x = u_position.get_x()
+        u_y = u_position.get_y()
 
-        self.switch_player()
+        ttt_x = ttt_position.get_x()
+        ttt_y = ttt_position.get_y()
+
+        ultimate_tic_tac_toe = self.get_ultimate_tic_tac_toe()
+
+        tic_tac_toes = ultimate_tic_tac_toe.get_childs()
+        tic_tac_toe = tic_tac_toes[u_y][u_x]
+
+        positions = tic_tac_toe.get_childs()
+        position = positions[ttt_y][ttt_x]
+
+        local_player = self.get_local_player()
+        remote_player = self.get_remote_player()
+        symbol = local_player.get_symbol()
+
+        if not local_player.get_is_turn():
+            symbol = remote_player.get_symbol()
+    
+        position.set_value(symbol)
+
+        self.toogle_player()
 
         self._last_move = (u_position, ttt_position)
 
@@ -146,10 +158,10 @@ class RoundManager:
 
         if players[0][2] == "1":
             self._current_state = "playing"
-            self._current_player = self._local_player
+            self._local_player.set_is_turn(True)
         else:
             self._current_state = "waiting_for_oponent"
-            self._current_player = self._remote_player
+            self._remote_player.set_is_turn(True)
 
     def reset_game(self):
         print(f"reset acionado no estado {self.get_current_state()}")

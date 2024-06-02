@@ -55,6 +55,15 @@ class Player:
     def set_winner(self, new_winner: bool) -> None:
         self._winner = new_winner
     
+    def get_is_turn(self):
+        return self._is_turn
+
+    def set_is_turn(self, is_turn) -> None:
+        self._is_turn = is_turn
+
+    def toogle_turn(self):
+        self._is_turn = not self._is_turn
+
     def reset(self, name: str = "", id: str = "", symbol: str = "", is_turn: bool = False, winner: bool = False):
         self._name: str = name
         self._id: str = id
