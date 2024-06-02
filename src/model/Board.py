@@ -37,14 +37,38 @@ class Board:
         self._value = new_value
 
     def get_lines(self):
-        return [line[:] for line in self._childs]
+        lines = []
+
+        for line in range(SIZE_OF_BOARD):
+            lines.append(self._childs[line])
+
+        return lines[:]
 
     def get_columns(self):
-        return [[self._childs[i][j] for i in range(SIZE_OF_BOARD)] for j in range(SIZE_OF_BOARD)]
+        columns = []
+
+        for j in range(SIZE_OF_BOARD):
+            column = []
+            
+            for i in range(SIZE_OF_BOARD):
+                column.append(self._childs[i][j])
+
+            columns.append(column)
+
+        return columns[:]
 
     def get_diagonals(self):
-        return [[self._childs[i][i] for i in range(SIZE_OF_BOARD)],
-                [self._childs[j][i] for j, i in zip(list(range(SIZE_OF_BOARD)), list(range(SIZE_OF_BOARD - 1, -1, -1)))]]
+        primary_diagonal = []
+        secondary_diagonal = []
+
+        for i in range(SIZE_OF_BOARD):
+            primary_diagonal.append(self._childs[i][i])
+
+        for j, i in zip(list(range(SIZE_OF_BOARD)), list(range(SIZE_OF_BOARD - 1, -1, -1))):
+            secondary_diagonal.append(self._childs[j][i])
+
+        diagonals = [primary_diagonal, secondary_diagonal]
+        return diagonals
 
     def get_regions(self):
         lines = self.get_lines()
