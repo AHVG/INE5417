@@ -68,8 +68,8 @@ class Board:
             primary_diagonal.append(childs[i][i])
 
         # equivalente a for (int i = 0, j = 2; i < 3; i++, j--) em C
-        for j, i in zip(list(range(SIZE_OF_BOARD)), list(range(SIZE_OF_BOARD - 1, -1, -1))):
-            secondary_diagonal.append(childs[j][i])
+        for i, j in zip(list(range(SIZE_OF_BOARD)), list(range(SIZE_OF_BOARD - 1, -1, -1))):
+            secondary_diagonal.append(childs[i][j])
 
         diagonals = [primary_diagonal, secondary_diagonal]
         return diagonals
@@ -93,24 +93,29 @@ class Board:
     def check_region_winner(self, region):
         symbols = set(map(lambda position: position.get_value(), region))
         number_of_symbols = len(symbols)
+        value = region[0].get_value()
 
-        if number_of_symbols == 1 and region[0].get_value() in ("X", "O"):
+        if number_of_symbols == 1 and value in ("X", "O"):
             return True
         
         return False
 
     def is_completely_filled(self) -> bool:
         filled_positions = 0
+        childs = self.get_childs()
 
-        for line in self.get_childs():
-            for position in line:
-                if position.get_value():
+        for i in range(SIZE_OF_BOARD):
+            for j in range(SIZE_OF_BOARD):
+                position = childs[i][j]
+                value = position.get_value()
+
+                if value:
                     filled_positions += 1
                     
-        if not filled_positions == SIZE_OF_BOARD * SIZE_OF_BOARD:
-            return False
+        if filled_positions == SIZE_OF_BOARD * SIZE_OF_BOARD:
+            return True
         
-        return True
+        return False
     
     def check_result(self) -> str:
         """
