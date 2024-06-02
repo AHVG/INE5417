@@ -87,7 +87,10 @@ class RoundManager:
         return u_position, ttt_position
 
     def switch_player(self) -> None:
-        self._current_player = self._remote_player if self._current_player.get_symbol() == self._local_player.get_symbol() else self._local_player
+        if self._current_player.get_symbol() == self._local_player.get_symbol():
+            self.set_current_player(self._remote_player)
+        else:
+            self.set_current_player(self._local_player)
 
     def verify_move_validity(self, u_position, ttt_position):
         # Atualizando o tabuleiro

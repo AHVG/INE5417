@@ -46,6 +46,12 @@ class Board:
         return [[self._childs[i][i] for i in range(SIZE_OF_BOARD)],
                 [self._childs[j][i] for j, i in zip(list(range(SIZE_OF_BOARD)), list(range(SIZE_OF_BOARD - 1, -1, -1)))]]
 
+    def get_regions(self):
+        lines = self.get_lines()
+        columns = self.get_columns()
+        diagonals = self.get_diagonals()
+        return [*lines, *columns, *diagonals]
+
     def reset(self):
         self._value = None
 
@@ -55,9 +61,19 @@ class Board:
         for line in self._childs:
             for element in line:
                 element.reset()
+    
+    def check_region_winner(self, region):
+        symbols = set(map(lambda position: position.get_value(), region))
+        number_of_symbols = len(symbols)
+
+        if number_of_symbols == 1 and region[0].get_value() in ("X", "O"):
+            return True
+        
+        return False
 
     def is_completely_filled(self) -> bool:
         filled_positions = 0
+
         for line in self.get_childs():
             for position in line:
                 if position.get_value():
@@ -85,10 +101,12 @@ class Board:
             for position in line:
                 position.check_result()
 
-        regions = [*self.get_lines(), *self.get_columns(), *self.get_diagonals()]
+        regions = self.get_regions()
 
         for region in regions:
-            if len(set(map(lambda position: position.get_value(), region))) == 1 and region[0].get_value() in ("X", "O"):
+            result = self.check_region_winner(region)
+
+            if result:
                 self.set_value(region[0].get_value())
                 print(f"Player {self.get_value()} won")
                 return region[0].get_value()
