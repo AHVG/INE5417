@@ -97,18 +97,39 @@ class PlayerActor(DogPlayerInterface):
         """
         Atualiza o estado da GUI após processamento da lógica do jogo
         """
-        coordinates = [Coordinate(x, y) for x in range(SIZE_OF_BOARD) for y in range(SIZE_OF_BOARD)]
+        coordinates = []
+
+        for x in range(SIZE_OF_BOARD):
+            for y in range(SIZE_OF_BOARD):
+                coordinates.append(Coordinate(x, y))
         
         for u_coordinate in coordinates:
-            u_x, u_y = u_coordinate.get_x(), u_coordinate.get_y()
+            u_x = u_coordinate.get_x()
+            u_y = u_coordinate.get_y()
+
             for ttt_coordinate in coordinates:
-                ttt_x, ttt_y = ttt_coordinate.get_x(), ttt_coordinate.get_y()
-                symbol = self._ultimate_ttt.get_childs()[u_y][u_x].get_childs()[ttt_y][ttt_x].get_value()
-                symbol = "" if symbol is None else symbol
-                self._buttons[u_y][u_x][ttt_y][ttt_x].config(text=symbol)
+                ttt_x = ttt_coordinate.get_x()
+                ttt_y = ttt_coordinate.get_y()
+
+                tic_tac_toes = self._ultimate_ttt.get_childs()
+                tic_tac_toe = tic_tac_toes[u_y][u_x]
+
+                positions = tic_tac_toe.get_childs()
+                position = positions[ttt_y][ttt_x]
+
+                symbol = position.get_value()
+                
+                if symbol is None:
+                    symbol = ""
+                
+                button = self._buttons[u_y][u_x][ttt_y][ttt_x]
+                button.config(text=symbol)
         
-        self._local_player_frame.set_player_name(self._local_player.get_name())
-        self._remote_player_frame.set_player_name(self._remote_player.get_name())
+        # Gambiarra para atualizar sempre o nome do jogador caso termine a partida
+        local_player_name = self._local_player.get_name()
+        remote_player_name = self._remote_player.get_name()
+        self._local_player_frame.set_player_name(local_player_name)
+        self._remote_player_frame.set_player_name(remote_player_name)
 
     def connect_to_dog(self):
         player_name = simpledialog.askstring(title="Player identifcation", prompt="Qual o seu nome?")
