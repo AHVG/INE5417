@@ -143,8 +143,6 @@ class RoundManager:
     
         position.set_value(symbol)
 
-        self.toogle_player()
-
         self._last_move = (u_position, ttt_position)
 
         return True
@@ -164,14 +162,12 @@ class RoundManager:
 
         if players[0][2] == "1":
             self._current_state = "playing"
-            self._local_player.set_is_turn(True)
-            self._local_player.set_symbol("X")
-            self._remote_player.set_symbol("O")
+            self._local_player.set_as_first()
+            self._remote_player.set_as_second()
         else:
             self._current_state = "waiting_for_oponent"
-            self._remote_player.set_is_turn(True)
-            self._local_player.set_symbol("O")
-            self._remote_player.set_symbol("X")
+            self._remote_player.set_as_first()
+            self._local_player.set_as_second()
 
     def reset_game(self):
         print(f"reset acionado no estado {self.get_current_state()}")
@@ -210,6 +206,7 @@ class RoundManager:
                     if result != "-":
                         self._remote_player.set_winner(True)
                 else:
+                    self.toogle_player()
                     self.set_current_state("playing")
 
         messagebox.showinfo(message="Recebendo movimento")
@@ -236,6 +233,7 @@ class RoundManager:
                     if result != "-":
                         self._local_player.set_winner(True)
                 else:
+                    self.toogle_player()
                     self.set_current_state("waiting_for_oponent")
 
                 self._dog_server.send_move({

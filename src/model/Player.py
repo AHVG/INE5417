@@ -61,6 +61,14 @@ class Player:
     def set_is_turn(self, is_turn) -> None:
         self._is_turn = is_turn
 
+    def set_as_first(self):
+        self.set_is_turn(True)
+        self.set_symbol("X")
+    
+    def set_as_second(self):
+        self.set_is_turn(False)
+        self.set_symbol("O")
+
     def toogle_turn(self):
         self._is_turn = not self._is_turn
 
