@@ -38,20 +38,22 @@ class Board:
 
     def get_lines(self):
         lines = []
+        childs = self.get_childs()
 
-        for line in range(SIZE_OF_BOARD):
-            lines.append(self._childs[line])
+        for i in range(SIZE_OF_BOARD):
+            lines.append(childs[i])
 
         return lines[:]
 
     def get_columns(self):
         columns = []
+        childs = self.get_childs()
 
         for j in range(SIZE_OF_BOARD):
             column = []
             
             for i in range(SIZE_OF_BOARD):
-                column.append(self._childs[i][j])
+                column.append(childs[i][j])
 
             columns.append(column)
 
@@ -60,12 +62,14 @@ class Board:
     def get_diagonals(self):
         primary_diagonal = []
         secondary_diagonal = []
+        childs = self.get_childs()
 
         for i in range(SIZE_OF_BOARD):
-            primary_diagonal.append(self._childs[i][i])
+            primary_diagonal.append(childs[i][i])
 
+        # equivalente a for (int i = 0, j = 2; i < 3; i++, j--) em C
         for j, i in zip(list(range(SIZE_OF_BOARD)), list(range(SIZE_OF_BOARD - 1, -1, -1))):
-            secondary_diagonal.append(self._childs[j][i])
+            secondary_diagonal.append(childs[j][i])
 
         diagonals = [primary_diagonal, secondary_diagonal]
         return diagonals
