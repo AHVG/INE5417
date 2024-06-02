@@ -91,7 +91,7 @@ class TestRoundManager(unittest.TestCase):
         self.round_manager.set_start(start_status)
 
         self.assertEqual(self.local_player.get_name(), "Local player")
-        self.assertEqual(self.local_player.get_id(), "987654321")
+        self.assertEqual(self.local_player.get_id(), "123123")
         self.assertEqual(self.local_player.get_symbol(), "X")
         
         self.assertEqual(self.remote_player.get_name(), "Remote player 234")
@@ -116,7 +116,7 @@ class TestRoundManager(unittest.TestCase):
         self.assertEqual(self.round_manager.get_current_state(), "playing")
 
         self.assertEqual(self.local_player.get_name(), "Local player")
-        self.assertEqual(self.local_player.get_id(), "123")
+        self.assertEqual(self.local_player.get_id(), "1")
         self.assertEqual(self.local_player.get_symbol(), "X")
         
         self.assertEqual(self.remote_player.get_name(), "Remote player")
@@ -126,18 +126,18 @@ class TestRoundManager(unittest.TestCase):
         self.assertIs(self.round_manager.get_last_move(), None)
 
     def test_receive_start(self):
-        start_status = StartStatus("2", "A partida começou", [["Local player", "1", "2"], ["Guest123321", "2", "1"]], "321")
+        start_status = StartStatus("2", "A partida começou", [["Local player", "321", "2"], ["Guest123321", "2", "1"]], "local_id")
         self.round_manager.receive_start(start_status)
 
         self.assertEqual(self.round_manager.get_current_state(), "waiting_for_oponent")
 
         self.assertEqual(self.local_player.get_name(), "Local player")
         self.assertEqual(self.local_player.get_id(), "321")
-        self.assertEqual(self.local_player.get_symbol(), "X")
+        self.assertEqual(self.local_player.get_symbol(), "O")
         
         self.assertEqual(self.remote_player.get_name(), "Guest123321")
         self.assertEqual(self.remote_player.get_id(), "2")
-        self.assertEqual(self.remote_player.get_symbol(), "O")
+        self.assertEqual(self.remote_player.get_symbol(), "X")
 
         self.assertIs(self.round_manager.get_last_move(), None)
 

@@ -1,4 +1,3 @@
-import random
 import tkinter as tk
 
 from tkinter import simpledialog, messagebox
@@ -10,14 +9,15 @@ from dog.start_status import StartStatus
 from utils.Constants import SIZE_OF_BOARD
 from utils.Coordinate import Coordinate
 
-from view.UIDirector import UIDirector
-from view.UIBuilder import UIBuilder
+from view.PlayerStatusFrame import PlayerStatusFrame
 
 from controller.RoundManager import RoundManager
 
 from model.UltimateTicTacToe import UltimateTicTacToe
 from model.Player import Player
 from model.Board import Board
+
+from functools import partial
 
 
 class PlayerActor(DogPlayerInterface):
@@ -42,12 +42,6 @@ class PlayerActor(DogPlayerInterface):
             Frame da tela onde está o Ultimate Tic Tac Toe
         _buttons : list[list[list[list[tk.Button]]]]
             Botões que representam a casa de um tabuleiro Tic Tac Toe
-        _player_img : ImageTk.PhotoImage
-            Imagem do player
-        _red_x_bg_white : ImageTk.PhotoImage
-            Imagem do x vermelho com fundo branco
-        _blue_o_bg_white : ImageTk.PhotoImage
-            Imagem do o azul com fundo branco
         _dog_server : DogActor
             Ator DOG que age sobre PlayerActor (receive_move, receive_start, receive_withdrawal_notification)
     """
@@ -61,20 +55,17 @@ class PlayerActor(DogPlayerInterface):
         self._remote_player: Player = Player("Jogador remoto", "O")
         self._dog_server: DogActor = DogActor()
         self._round_manager: RoundManager = RoundManager(self._ultimate_ttt, self._local_player, self._remote_player, self._dog_server)
+        
+        self._root = tk.Tk()
+        self._root.title("Ultimate Tic Tac Toe")
+        self._root.config(bg="white")
 
-        self._ui_builder = UIBuilder(self)
-        self._ui_director = UIDirector(self._ui_builder)
-        self._ui_director.build()
-
-        self._root = self._ui_director.get_root()
-
-        self._red_x_bg_white = self._ui_director.get_red_x_bg_white()
-        self._blue_o_bg_white = self._ui_director.get_blue_o_bg_white()
-
-        self._board_frame = self._ui_director.get_board_frame()
-        self._local_player_frame = self._ui_director.get_local_player_frame()
-        self._remote_player_frame = self._ui_director.get_remote_player_frame()
-        self._buttons = self._ui_director.get_buttons()
+        self._player_frame = None
+        self._board_frame = None
+        self._local_player_frame = None
+        self._remote_player_frame = None
+        self._buttons = None
+        self.fill_main_window()
 
         self.connect_to_dog()
     
@@ -101,6 +92,71 @@ class PlayerActor(DogPlayerInterface):
 
     def run(self):
         self._root.mainloop()
+
+    def build_menu(self):
+        menu = tk.Menu(self._root)
+        menu.add_command(label="Start match", command=self.start_match)
+        menu.add_command(label="Reset", command=self.reset_game)
+        menu.add_command(label="Quit", command=self.quit)
+        self._root.config(menu=menu)
+
+    def build_player_status(self):
+        self._player_frame: tk.Frame = tk.Frame(self._root)
+        self._player_frame.grid(row=0, column=0)
+
+        self._local_player_frame = PlayerStatusFrame(self._player_frame, "Jogador local", "imgs/player_image.png", bg="white")
+        self._local_player_frame.grid(column=0, row=0)
+
+        self._remote_player_frame = PlayerStatusFrame(self._player_frame, "Jogador remoto", "imgs/player_image.png", bg="white")
+        self._remote_player_frame.grid(column=0, row=1)
+
+    def build_board(self):
+        self._board_frame: tk.Frame = tk.Frame(self._root, bg='white')
+        self._board_frame.grid(row=0, column=1, padx=50, pady=50)
+
+        def build_tic_tac_toe(tic_tac_toe, frame):
+            buttons = []
+
+            for k, line in enumerate(tic_tac_toe.get_childs()):
+                buttons_line = []
+
+                for h, position in enumerate(line):
+                    button = tk.Button(frame, text=position.get_value(), font=('Arial', 20), height=2, width=4,
+                                        bg='white', fg='gray', command=partial(self.on_click_board, Coordinate(j, i), Coordinate(h, k)))
+                    button.grid(row=k, column=h, sticky='nsew', padx=1, pady=1)
+                    buttons_line.append(button)
+
+                buttons.append(buttons_line)
+
+            return buttons
+
+        self._buttons: list[list[list[list[tk.Button]]]] = []
+
+        for i, line in enumerate(self.get_ultimate_tic_tac_toe().get_childs()):
+            buttons_line = []
+
+            for j, tic_tac_toe in enumerate(line):
+
+                def change_bg(_, frame, color):
+                    frame.config(bg=color)
+
+                big_frame = tk.Frame(self._board_frame, bg='white', name=f'{i}x{j}')
+                big_frame.grid(row=i, column=j)
+
+                frame = tk.Frame(big_frame, bg='white')
+                frame.grid(row=0, column=0, padx=4, pady=4)
+
+                frame.bind("<Enter>", partial(change_bg, frame=frame, color="gray"))
+                frame.bind("<Leave>", partial(change_bg, frame=frame, color="white"))
+
+                buttons_line.append(build_tic_tac_toe(tic_tac_toe, frame))
+            
+            self._buttons.append(buttons_line)
+
+    def fill_main_window(self):
+        self.build_menu()
+        self.build_player_status()
+        self.build_board()
 
     def update_gui(self) -> None:
         """

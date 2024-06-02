@@ -41,6 +41,7 @@ class RoundManager:
         self._current_state = "init"
         self._dog_server = dog_server
         self._last_move = None
+        self._local_id = None
 
     def get_ultimate_tic_tac_toe(self) -> Board:
         return self._ultimate_tic_tac_toe
@@ -71,6 +72,12 @@ class RoundManager:
     
     def set_last_move(self, last_move: tuple):  # primeiro elemento é a coordenada do ultimate e o segundo é a coordenada do ttt
         self._last_move = last_move
+    
+    def get_local_id(self):
+        return self._local_id
+
+    def set_local_id(self, local_id):
+        self._local_id = local_id
 
     def convert_dict_to_coordinates(self, a_move: dict):
         u_position = Coordinate(a_move["u"][0], a_move["u"][1])
@@ -143,25 +150,28 @@ class RoundManager:
         return True
 
     def set_start(self, start_status: StartStatus):
-        # TODO: Arrumar o id do player local (possivelmente vai ter que alterar os testes)
         self._last_move = None
 
         players = start_status.get_players()
         local_id = start_status.get_local_id()
 
-        self._local_player.set_id(local_id)
-        self._local_player.set_symbol("X")
+        self.set_local_id(local_id)
+
+        self._local_player.set_id(players[0][1])
 
         self._remote_player.set_name(players[1][0])
         self._remote_player.set_id(players[1][1])
-        self._remote_player.set_symbol("O")
 
         if players[0][2] == "1":
             self._current_state = "playing"
             self._local_player.set_is_turn(True)
+            self._local_player.set_symbol("X")
+            self._remote_player.set_symbol("O")
         else:
             self._current_state = "waiting_for_oponent"
             self._remote_player.set_is_turn(True)
+            self._local_player.set_symbol("O")
+            self._remote_player.set_symbol("X")
 
     def reset_game(self):
         print(f"reset acionado no estado {self.get_current_state()}")
