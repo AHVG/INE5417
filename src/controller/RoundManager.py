@@ -192,10 +192,8 @@ class RoundManager:
 
     def receive_start(self, start_status: StartStatus):
         print(f"receive_start acionado no estado {self.get_current_state()}")
-        if self.get_current_state() == "init" or self.get_current_state() == "gameover":
-            self.reset_game()
-            self.set_start(start_status)
-
+        self.reset_game()
+        self.set_start(start_status)
         messagebox.showinfo(message=start_status.get_message())
     
     def receive_move(self, a_move):

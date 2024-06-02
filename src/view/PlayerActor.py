@@ -110,25 +110,25 @@ class PlayerActor(DogPlayerInterface):
         self._remote_player_frame = PlayerStatusFrame(self._player_frame, "Jogador remoto", "imgs/player_image.png", bg="white")
         self._remote_player_frame.grid(column=0, row=1)
 
-    def build_board(self):
+    def build_tic_tac_toe(self, tic_tac_toe, frame, u_coordinate):
+        buttons = []
+
+        for k, line in enumerate(tic_tac_toe.get_childs()):
+            buttons_line = []
+
+            for h, position in enumerate(line):
+                button = tk.Button(frame, text=position.get_value(), font=('Arial', 20), height=2, width=4,
+                                    bg='white', fg='gray', command=partial(self.on_click_board, u_coordinate, Coordinate(h, k)))
+                button.grid(row=k, column=h, sticky='nsew', padx=1, pady=1)
+                buttons_line.append(button)
+
+            buttons.append(buttons_line)
+
+        return buttons
+
+    def build_ultimate_tic_tac_toe(self):
         self._board_frame: tk.Frame = tk.Frame(self._root, bg='white')
         self._board_frame.grid(row=0, column=1, padx=50, pady=50)
-
-        def build_tic_tac_toe(tic_tac_toe, frame):
-            buttons = []
-
-            for k, line in enumerate(tic_tac_toe.get_childs()):
-                buttons_line = []
-
-                for h, position in enumerate(line):
-                    button = tk.Button(frame, text=position.get_value(), font=('Arial', 20), height=2, width=4,
-                                        bg='white', fg='gray', command=partial(self.on_click_board, Coordinate(j, i), Coordinate(h, k)))
-                    button.grid(row=k, column=h, sticky='nsew', padx=1, pady=1)
-                    buttons_line.append(button)
-
-                buttons.append(buttons_line)
-
-            return buttons
 
         self._buttons: list[list[list[list[tk.Button]]]] = []
 
@@ -149,14 +149,14 @@ class PlayerActor(DogPlayerInterface):
                 frame.bind("<Enter>", partial(change_bg, frame=frame, color="gray"))
                 frame.bind("<Leave>", partial(change_bg, frame=frame, color="white"))
 
-                buttons_line.append(build_tic_tac_toe(tic_tac_toe, frame))
+                buttons_line.append(self.build_tic_tac_toe(tic_tac_toe, frame, Coordinate(j, i)))
             
             self._buttons.append(buttons_line)
 
     def fill_main_window(self):
         self.build_menu()
         self.build_player_status()
-        self.build_board()
+        self.build_ultimate_tic_tac_toe()
 
     def update_gui(self) -> None:
         """
