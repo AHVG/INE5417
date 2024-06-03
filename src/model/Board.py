@@ -91,7 +91,15 @@ class Board:
                 element.reset()
     
     def check_region_winner(self, region):
-        symbols = set(map(lambda position: position.get_value(), region))
+        values = []
+
+        for i in range(3):
+            position = region[i]
+            aux = position.get_value()
+            values.append(aux)
+
+        symbols = set(values)
+
         number_of_symbols = len(symbols)
         value = region[0].get_value()
 
