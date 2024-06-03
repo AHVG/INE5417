@@ -69,7 +69,7 @@ class Player:
         self.set_is_turn(False)
         self.set_symbol("O")
 
-    def toogle_turn(self):
+    def toggle_turn(self):
         self._is_turn = not self._is_turn
 
     def reset(self, name: str = "", id: str = "", symbol: str = "", is_turn: bool = False, winner: bool = False):

@@ -84,12 +84,12 @@ class RoundManager:
         ttt_position = Coordinate(a_move["ttt"][0], a_move["ttt"][1])
         return u_position, ttt_position
 
-    def toogle_player(self) -> None:
+    def toggle_player(self) -> None:
         local_player = self.get_local_player()
         remote_player = self.get_remote_player()
 
-        local_player.toogle_turn()
-        remote_player.toogle_turn()
+        local_player.toggle_turn()
+        remote_player.toggle_turn()
 
     def verify_move_validity(self, u_position, ttt_position):
         # Atualizando o tabuleiro
@@ -134,12 +134,10 @@ class RoundManager:
         positions = tic_tac_toe.get_childs()
         position = positions[ttt_y][ttt_x]
 
-        local_player = self.get_local_player()
-        remote_player = self.get_remote_player()
-        symbol = local_player.get_symbol()
-
-        if not local_player.get_is_turn():
-            symbol = remote_player.get_symbol()
+        if self._local_player.get_is_turn():
+            symbol = self._local_player.get_symbol()
+        else:
+            symbol = self._remote_player.get_symbol()
     
         position.set_value(symbol)
 
@@ -206,8 +204,8 @@ class RoundManager:
                     if result != "-":
                         self._remote_player.set_winner(True)
                 else:
-                    self.toogle_player()
                     self.set_current_state("playing")
+                    self.toggle_player()
 
         messagebox.showinfo(message="Recebendo movimento")
     
@@ -233,8 +231,8 @@ class RoundManager:
                     if result != "-":
                         self._local_player.set_winner(True)
                 else:
-                    self.toogle_player()
                     self.set_current_state("waiting_for_oponent")
+                    self.toggle_player()
 
                 self._dog_server.send_move({
                     "u": (u_position.get_x(), u_position.get_y()),

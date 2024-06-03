@@ -45,9 +45,9 @@ class TestRoundManager(unittest.TestCase):
 
     def test_switch_player(self):
         self.local_player.set_is_turn(True)
-        self.round_manager.toogle_player()
+        self.round_manager.toggle_player()
         self.assertTrue(self.remote_player.get_is_turn())
-        self.round_manager.toogle_player()
+        self.round_manager.toggle_player()
         self.assertTrue(self.local_player.get_is_turn())
 
     def test_verify_move_validity(self):
@@ -77,13 +77,13 @@ class TestRoundManager(unittest.TestCase):
         self.assertEqual((Coordinate(2, 0), Coordinate(1, 1)), self.round_manager.get_last_move())
 
         # O jogador remoto joga
-        self.round_manager.toogle_player()
+        self.round_manager.toggle_player()
         self.assertEqual(self.round_manager.put_marker(Coordinate(1, 1), Coordinate(2, 2)), True)
         self.assertEqual(self.round_manager.get_ultimate_tic_tac_toe().get_childs()[1][1].get_childs()[2][2].get_value(), "O")
         self.assertEqual((Coordinate(1, 1), Coordinate(2, 2)), self.round_manager.get_last_move())
 
         # O jogador local joga, porém numa posição inválida
-        self.round_manager.toogle_player()
+        self.round_manager.toggle_player()
         self.assertEqual(self.round_manager.put_marker(Coordinate(1, 1), Coordinate(2, 2)), False)
         self.assertEqual(self.round_manager.get_ultimate_tic_tac_toe().get_childs()[1][1].get_childs()[2][2].get_value(), "O")
         self.assertEqual((Coordinate(1, 1), Coordinate(2, 2)), self.round_manager.get_last_move())
