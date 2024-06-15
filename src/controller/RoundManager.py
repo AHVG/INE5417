@@ -101,15 +101,16 @@ class RoundManager:
 
             correct_ttt = self._ultimate_tic_tac_toe.get_childs()[previous_ttt_position.get_y()][previous_ttt_position.get_x()]
 
-            current_ttt = self._ultimate_tic_tac_toe.get_childs()[u_position.get_y()][u_position.get_x()]
-            current_position = current_ttt.get_childs()[ttt_position.get_y()][ttt_position.get_x()]
-
             # Verifica se o ttt que o jogador deve jogar tem vencedor
             if not correct_ttt.get_value():
+                # Se não tiver, verifica se o ttt em que o jogador jogou está de acordo com o lance anterior
                 if u_position != previous_ttt_position:
                     return False
 
-            # Verificar se tem vencedor no ttt e se sua posição está ocupada
+            current_ttt = self._ultimate_tic_tac_toe.get_childs()[u_position.get_y()][u_position.get_x()]
+            current_position = current_ttt.get_childs()[ttt_position.get_y()][ttt_position.get_x()]
+            
+            # Verificar se tem vencedor no ttt selecionado ou se a posição selecionada está ocupada
             if current_ttt.get_value() or current_position.get_value():
                 return False
 
@@ -212,9 +213,9 @@ class RoundManager:
     def receive_withdrawal_notification(self):
         print(f"receive_withdrawal_notification acionado no estado {self.get_current_state()}")
 
-        if self.get_current_state() == "playing" or self.get_current_state() == "wating_for_oponent":
+        if self.get_current_state() == "playing" or self.get_current_state() == "waiting_for_oponent":
             self.set_current_state("gameover")
-            self._local_player.set_winner(True) # Colocar no documento que, quando alguem desiste, esta pessoa perde
+            self._local_player.set_winner(True) # Quando alguém desiste, esta pessoa perde
             self._ultimate_tic_tac_toe.set_value(self._local_player.get_symbol())
 
         messagebox.showinfo(message="Oponente desistiu")

@@ -1,5 +1,6 @@
 import tkinter as tk
 
+from functools import partial
 from tkinter import simpledialog, messagebox
 
 from dog.dog_interface import DogPlayerInterface
@@ -17,7 +18,6 @@ from model.UltimateTicTacToe import UltimateTicTacToe
 from model.Player import Player
 from model.Board import Board
 
-from functools import partial
 
 
 class PlayerActor(DogPlayerInterface):
@@ -62,9 +62,13 @@ class PlayerActor(DogPlayerInterface):
 
         self._player_frame = None
         self._board_frame = None
+        
         self._local_player_frame = None
         self._remote_player_frame = None
+
         self._buttons = None
+        self._frames = None
+
         self.fill_main_window()
 
         self.connect_to_dog()
@@ -109,49 +113,80 @@ class PlayerActor(DogPlayerInterface):
 
         self._remote_player_frame = PlayerStatusFrame(self._player_frame, "Jogador remoto", "imgs/player_image.png", bg="white")
         self._remote_player_frame.grid(column=0, row=1)
-
-    def build_tic_tac_toe(self, tic_tac_toe, frame, u_coordinate):
+    
+    def build_board(self, parent, board, level=1):
         buttons = []
+        frames = []
 
-        for k, line in enumerate(tic_tac_toe.get_childs()):
-            buttons_line = []
+        if board.get_childs():
+            big_frame = tk.Frame(parent, bg='black')
+            big_frame.grid(row=0, column=0, padx=10, pady=10)
 
-            for h, position in enumerate(line):
-                button = tk.Button(frame, text=position.get_value(), font=('Arial', 20), height=2, width=4,
-                                    bg='white', fg='gray', command=partial(self.on_click_board, u_coordinate, Coordinate(h, k)))
-                button.grid(row=k, column=h, sticky='nsew', padx=1, pady=1)
-                buttons_line.append(button)
+            def change_bg(_, frame, color):
+                # Gambiarra para não trocar a cor de fundo quando alguém vence ou empata
+                if frame.cget('bg') in ("#dcdcdc", "white"):
+                    frame.config(bg=color)
 
-            buttons.append(buttons_line)
+            for i in range(3):
+                buttons_line = []
+                frames_line = []
+                for j in range(3):
+                    frame = tk.Frame(big_frame, bg='white')
+                    frame.grid(row=i, column=j)
+                    frame.bind("<Enter>", partial(change_bg, frame=frame, color="#dcdcdc"))
+                    frame.bind("<Leave>", partial(change_bg, frame=frame, color="white"))
 
-        return buttons
+                    button_or_buttons = self.build_board(frame, board.get_childs()[i][j], level + 1)
+                    
+                    buttons_line.append(button_or_buttons)
+                    frames_line.append(frame)
+
+                buttons.append(buttons_line)
+                frames.append(frames_line)
+
+            frames[0][0].grid_configure(padx=(0, 2), pady=(0, 2))
+            frames[0][2].grid_configure(padx=(2, 0), pady=(0, 2))
+            frames[2][0].grid_configure(padx=(0, 2), pady=(2, 0))
+            frames[2][2].grid_configure(padx=(2, 0), pady=(2, 0))
+
+            frames[1][1].grid_configure(padx=(2, 2), pady=(2, 2))
+
+            frames[0][1].grid_configure(padx=(2, 2), pady=(0, 2))
+            frames[1][0].grid_configure(padx=(0, 2), pady=(2, 2))
+            frames[1][2].grid_configure(padx=(2, 0), pady=(2, 2))
+            frames[2][1].grid_configure(padx=(2, 2), pady=(2, 0))
+
+            if level == 1:
+                self._frames = frames
+
+            return buttons
+
+        button = tk.Button(parent, text=board.get_value(), font=('Arial', 20), height=2, width=4,
+                            bg='white', fg='black', relief='flat', bd=0, highlightthickness=0)
+        button.grid(row=0, column=0)
+        return button
+
+    def add_command_to_buttons(self, buttons):
+        coordinates = []
+
+        for x in range(SIZE_OF_BOARD):
+            for y in range(SIZE_OF_BOARD):
+                coordinates.append(Coordinate(x, y))
+        
+        for u_ttt in coordinates:
+            u_ttt_x = u_ttt.get_x()
+            u_ttt_y = u_ttt.get_y()
+
+            for ttt in coordinates:
+                ttt_x = ttt.get_x()
+                ttt_y = ttt.get_y()
+                buttons[u_ttt_y][u_ttt_x][ttt_y][ttt_x].config(command=partial(self.on_click_board, u_ttt, ttt))
 
     def build_ultimate_tic_tac_toe(self):
         self._board_frame: tk.Frame = tk.Frame(self._root, bg='white')
         self._board_frame.grid(row=0, column=1, padx=50, pady=50)
-
-        self._buttons: list[list[list[list[tk.Button]]]] = []
-
-        for i, line in enumerate(self.get_ultimate_tic_tac_toe().get_childs()):
-            buttons_line = []
-
-            for j, tic_tac_toe in enumerate(line):
-
-                def change_bg(_, frame, color):
-                    frame.config(bg=color)
-
-                big_frame = tk.Frame(self._board_frame, bg='white', name=f'{i}x{j}')
-                big_frame.grid(row=i, column=j)
-
-                frame = tk.Frame(big_frame, bg='white')
-                frame.grid(row=0, column=0, padx=4, pady=4)
-
-                frame.bind("<Enter>", partial(change_bg, frame=frame, color="gray"))
-                frame.bind("<Leave>", partial(change_bg, frame=frame, color="white"))
-
-                buttons_line.append(self.build_tic_tac_toe(tic_tac_toe, frame, Coordinate(j, i)))
-            
-            self._buttons.append(buttons_line)
+        self._buttons = self.build_board(self._board_frame, self._ultimate_ttt)
+        self.add_command_to_buttons(self._buttons)
 
     def fill_main_window(self):
         self.build_menu()
@@ -179,6 +214,15 @@ class PlayerActor(DogPlayerInterface):
                 tic_tac_toes = self._ultimate_ttt.get_childs()
                 tic_tac_toe = tic_tac_toes[u_y][u_x]
 
+                winner = tic_tac_toe.get_value()
+
+                if winner == "X":
+                    self._frames[u_y][u_x].config(bg="red")
+                elif winner == "O":
+                    self._frames[u_y][u_x].config(bg="blue")
+                elif winner == "-":
+                    self._frames[u_y][u_x].config(bg="gray")
+
                 positions = tic_tac_toe.get_childs()
                 position = positions[ttt_y][ttt_x]
 
@@ -188,8 +232,15 @@ class PlayerActor(DogPlayerInterface):
                     symbol = ""
                 
                 button = self._buttons[u_y][u_x][ttt_y][ttt_x]
-                button.config(text=symbol)
-        
+                if symbol == "X":
+                    button.config(text=symbol, fg="red")
+                elif symbol == "O":
+                    button.config(text=symbol, fg="blue")
+                elif symbol == "-":
+                    button.config(text=symbol, fg="gray")
+                else:
+                    button.config(text=symbol, fg="black")
+
         # Gambiarra para atualizar sempre o nome do jogador caso termine a partida
         local_player_name = self._local_player.get_name()
         remote_player_name = self._remote_player.get_name()
