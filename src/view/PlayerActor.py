@@ -222,6 +222,8 @@ class PlayerActor(DogPlayerInterface):
                     self._frames[u_y][u_x].config(bg="blue")
                 elif winner == "-":
                     self._frames[u_y][u_x].config(bg="gray")
+                else:  # Corrige a cor quando se reseta o jogo?
+                    self._frames[u_y][u_x].config(bg="white")
 
                 positions = tic_tac_toe.get_childs()
                 position = positions[ttt_y][ttt_x]
@@ -240,6 +242,16 @@ class PlayerActor(DogPlayerInterface):
                     button.config(text=symbol, fg="gray")
                 else:
                     button.config(text=symbol, fg="black")
+
+        if self._local_player.get_is_turn():
+            self._local_player_frame.set_playing()
+            self._remote_player_frame.set_waiting()
+        elif self._remote_player.get_is_turn():
+            self._remote_player_frame.set_playing()
+            self._local_player_frame.set_waiting()
+        else:
+            self._remote_player_frame.set_waiting()
+            self._local_player_frame.set_waiting()
 
         # Gambiarra para atualizar sempre o nome do jogador caso termine a partida
         local_player_name = self._local_player.get_name()

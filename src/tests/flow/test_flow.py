@@ -49,6 +49,9 @@ class TestFlow(TKinterTestCase):
                 self.local_actor.receive_move({"u": u_move, "ttt": ttt_move})
                 self.pump_events()
 
+            # from time import sleep
+            # sleep(1)
+
     @patch('controller.RoundManager.messagebox.showinfo')
     @patch('view.PlayerActor.simpledialog.askstring')
     @patch('view.PlayerActor.DogActor')
