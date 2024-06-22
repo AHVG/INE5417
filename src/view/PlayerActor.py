@@ -1,7 +1,8 @@
 import tkinter as tk
+import datetime
 
 from functools import partial
-from tkinter import simpledialog, messagebox
+from tkinter import simpledialog, font
 
 from dog.dog_interface import DogPlayerInterface
 from dog.dog_actor import DogActor
@@ -54,7 +55,7 @@ class PlayerActor(DogPlayerInterface):
         self._local_player: Player = Player("Jogador local", "X")
         self._remote_player: Player = Player("Jogador remoto", "O")
         self._dog_server: DogActor = DogActor()
-        self._round_manager: RoundManager = RoundManager(self._ultimate_ttt, self._local_player, self._remote_player, self._dog_server)
+        self._round_manager: RoundManager = RoundManager(self, self._ultimate_ttt, self._local_player, self._remote_player, self._dog_server)
         
         self._root = tk.Tk()
         self._root.title("Ultimate Tic Tac Toe")
@@ -65,6 +66,8 @@ class PlayerActor(DogPlayerInterface):
         
         self._local_player_frame = None
         self._remote_player_frame = None
+
+        self._message_box_frame = None
 
         self._buttons = None
         self._frames = None
@@ -106,12 +109,12 @@ class PlayerActor(DogPlayerInterface):
 
     def build_player_status(self):
         self._player_frame: tk.Frame = tk.Frame(self._root)
-        self._player_frame.grid(row=0, column=0)
+        self._player_frame.grid(row=0, column=0, padx=(10, 0))
 
         self._local_player_frame = PlayerStatusFrame(self._player_frame, "Jogador local", "imgs/player_image.png", bg="white")
         self._local_player_frame.grid(column=0, row=0)
 
-        self._remote_player_frame = PlayerStatusFrame(self._player_frame, "Jogador remoto", "imgs/player_image.png", bg="white")
+        self._remote_player_frame = PlayerStatusFrame(self._player_frame, "", "imgs/player_image.png", bg="white")
         self._remote_player_frame.grid(column=0, row=1)
     
     def build_board(self, parent, board, level=1):
@@ -184,14 +187,53 @@ class PlayerActor(DogPlayerInterface):
 
     def build_ultimate_tic_tac_toe(self):
         self._board_frame: tk.Frame = tk.Frame(self._root, bg='white')
-        self._board_frame.grid(row=0, column=1, padx=50, pady=50)
+        self._board_frame.grid(row=0, column=1, padx=50, pady=20)
         self._buttons = self.build_board(self._board_frame, self._ultimate_ttt)
         self.add_command_to_buttons(self._buttons)
+
+    def build_message_box(self):
+        # Cria um Frame para a caixa de mensagens
+        self._message_box_frame = tk.Frame(self._root, bg="white")
+        self._message_box_frame.grid(row=1, column=0, columnspan=2, sticky="ew")
+
+        # Configura a fonte
+        custom_font = font.Font(family="Helvetica", size=20)  # Define a fonte com tamanho maior
+
+        # Configura o widget Text para exibir as mensagens com a fonte customizada
+        self._message_box = tk.Text(self._message_box_frame, height=3, width=50,
+                                    borderwidth=1, highlightthickness=1,
+                                    font=custom_font)  # Aplica a fonte
+        scrollbar = tk.Scrollbar(self._message_box_frame, command=self._message_box.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)  # Coloca a Scrollbar à direita do Text
+        self._message_box.pack(side=tk.LEFT, expand=True, fill=tk.BOTH, padx=5, pady=5)
+
+        # Configura o Text para usar a Scrollbar
+        self._message_box.config(yscrollcommand=scrollbar.set)
+
+        # Configura a tag para centralizar o texto
+        self._message_box.tag_configure('center', justify='center')
+        self._message_box.config(state=tk.DISABLED)
+
+    def post_message(self, message):
+        # Obtém a hora atual
+        now = datetime.datetime.now()
+        timestamp = now.strftime(" [%H:%M:%S]  ")  # Formata a hora como [Hora:Minuto:Segundo]
+
+        self._message_box.config(state=tk.NORMAL)
+        # Insere o texto com o horário atual e usando a tag 'center' que foi ajustada para left
+        self._message_box.insert(tk.END, timestamp + message + "\n")
+
+        # Move a visualização para uma linha antes do final
+        end_line = int(self._message_box.index("end-1c").split(".")[0])  # Descobre o número da última linha
+        line_before_end = max(1, end_line - 1)  # Calcula uma linha antes do final, mas não menos que 1
+        self._message_box.see(f"{line_before_end}.0")  # Ajusta a visualização para essa linha
+        self._message_box.config(state=tk.DISABLED)
 
     def fill_main_window(self):
         self.build_menu()
         self.build_player_status()
         self.build_ultimate_tic_tac_toe()
+        self.build_message_box()
 
     def update_gui(self) -> None:
         """
@@ -202,7 +244,18 @@ class PlayerActor(DogPlayerInterface):
         for x in range(SIZE_OF_BOARD):
             for y in range(SIZE_OF_BOARD):
                 coordinates.append(Coordinate(x, y))
-        
+
+        winner = self._ultimate_ttt.get_value()
+
+        if winner == "X":
+            self._board_frame.config(bg="red")
+        elif winner == "O":
+            self._board_frame.config(bg="blue")
+        elif winner == "-":
+            self._board_frame.config(bg="gray")
+        else:  # Corrige a cor quando se reseta o jogo?
+            self._board_frame.config(bg="white")
+
         for i in range(0, 9):
             u_x = coordinates[i].get_x()
             u_y = coordinates[i].get_y()
@@ -214,15 +267,15 @@ class PlayerActor(DogPlayerInterface):
                 tic_tac_toes = self._ultimate_ttt.get_childs()
                 tic_tac_toe = tic_tac_toes[u_y][u_x]
 
-                winner = tic_tac_toe.get_value()
+                local_winner = tic_tac_toe.get_value()
 
-                if winner == "X":
+                if local_winner == "X":
                     self._frames[u_y][u_x].config(bg="red")
-                elif winner == "O":
+                elif local_winner == "O":
                     self._frames[u_y][u_x].config(bg="blue")
-                elif winner == "-":
+                elif local_winner == "-":
                     self._frames[u_y][u_x].config(bg="gray")
-                else:  # Corrige a cor quando se reseta o jogo?
+                else:
                     self._frames[u_y][u_x].config(bg="white")
 
                 positions = tic_tac_toe.get_childs()
@@ -262,7 +315,7 @@ class PlayerActor(DogPlayerInterface):
     def connect_to_dog(self):
         player_name = simpledialog.askstring(title="Player identifcation", prompt="Qual o seu nome?")
         message = self._dog_server.initialize(player_name, self)
-        messagebox.showinfo(message=message)
+        self.post_message(message)
 
         self._local_player.set_name(player_name)
         self.update_gui()

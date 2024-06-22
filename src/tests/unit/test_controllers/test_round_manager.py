@@ -22,12 +22,12 @@ class TestRoundManager(unittest.TestCase):
         self.remote_player = Player(name="1", id="2", symbol="O")
         self.dog_actor = MagicMock(spec=DogActor)
 
-        self.dog_actor.initialize.return_value = "Alo"
+        self.dog_actor.initialize.return_value = "Conectado ao Dog Server"
         start_status = StartStatus("2", "A partida começou", [["Local player", "1", "1"], ["Remote player", "2", "2"]], "123")
         self.dog_actor.start_match.return_value = start_status
 
         # RoundManager instance
-        self.round_manager = RoundManager(self.board, self.local_player, self.remote_player, self.dog_actor)
+        self.round_manager = RoundManager(MagicMock(), self.board, self.local_player, self.remote_player, self.dog_actor)
         
         # Mock messagebox to avoid GUI pop up during tests
         messagebox.showinfo = MagicMock()

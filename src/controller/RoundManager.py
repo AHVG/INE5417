@@ -26,7 +26,7 @@ class RoundManager:
             Player remoto (O que envia movimentos para o player local ou o que envia proposta de início de partida)
     """
     
-    def __init__(self, ultimate_tic_tac_toe: Board, local_player: Player, remote_player: Player, dog_server: DogActor) -> None:
+    def __init__(self, player_actor, ultimate_tic_tac_toe: Board, local_player: Player, remote_player: Player, dog_server: DogActor) -> None:
         """
         Inicializa o gerenciador de round
 
@@ -35,6 +35,7 @@ class RoundManager:
             local_player (Player): Player local
             remote_player (Player): Player remoto
         """
+        self._player_actor = player_actor
         self._ultimate_tic_tac_toe: Board = ultimate_tic_tac_toe
         self._local_player: Player = local_player
         self._remote_player: Player = remote_player
@@ -180,7 +181,7 @@ class RoundManager:
         print(f"start_match acionado no estado {self.get_current_state()}")
         if self.get_current_state() == "init":
             start_status = self._dog_server.start_match(2)
-            messagebox.showinfo(message=start_status.get_message())
+            self._player_actor.post_message(message=start_status.get_message())
 
             if start_status.code == '2':
                 self.set_start(start_status)
@@ -189,7 +190,7 @@ class RoundManager:
         print(f"receive_start acionado no estado {self.get_current_state()}")
         self.reset_game()
         self.set_start(start_status)
-        messagebox.showinfo(message=start_status.get_message())
+        self._player_actor.post_message(start_status.get_message())
     
     def receive_move(self, a_move):
         print(f"receive_move acionado no estado {self.get_current_state()}")
@@ -204,9 +205,9 @@ class RoundManager:
 
                     if result != "-":
                         self._remote_player.set_winner(True)
-                        messagebox.showinfo(message="Você perdeu!")
+                        self._player_actor.post_message(message="Você perdeu!")
                     else:
-                        messagebox.showinfo(message="Deu empate!")
+                        self._player_actor.post_message(message="Deu empate!")
                 else:
                     self.set_current_state("playing")
                     self.toggle_player()
@@ -218,7 +219,7 @@ class RoundManager:
             self.set_current_state("gameover")
             self._local_player.set_winner(True) # Quando alguém desiste, esta pessoa perde
             self._ultimate_tic_tac_toe.set_value(self._local_player.get_symbol())
-            messagebox.showinfo(message="Oponente desistiu! Você venceu")
+            self._player_actor.post_message(message="Oponente desistiu! Você venceu")
 
     def on_click_board(self, u_position: Coordinate, ttt_position: Coordinate) -> bool:
         print(f"on_click_board acionado no estado {self.get_current_state()}")
@@ -235,10 +236,10 @@ class RoundManager:
                     match_status = "finished"  # Sinalizando que o jogo acabou para ao Dog
 
                     if result != "-":
-                        messagebox.showinfo(message="Você venceu!")
+                        self._player_actor.post_message(message="Você venceu!")
                         self._local_player.set_winner(True)
                     else:
-                        messagebox.showinfo(message="Deu empate!")
+                        self._player_actor.post_message(message="Deu empate!")
                 else:
                     self.set_current_state("waiting_for_oponent")
                     self.toggle_player()
