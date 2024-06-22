@@ -219,7 +219,7 @@ class RoundManager:
             self.set_current_state("gameover")
             self._local_player.set_winner(True) # Quando alguém desiste, esta pessoa perde
             self._ultimate_tic_tac_toe.set_value(self._local_player.get_symbol())
-            self._player_actor.post_message(message="Oponente desistiu! Você venceu")
+            self._player_actor.post_message(message="Oponente desistiu. Você venceu!")
 
     def on_click_board(self, u_position: Coordinate, ttt_position: Coordinate) -> bool:
         print(f"on_click_board acionado no estado {self.get_current_state()}")

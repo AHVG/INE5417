@@ -96,6 +96,12 @@ class PlayerActor(DogPlayerInterface):
 
     def get_remote_player_frame(self):
         return self._remote_player_frame
+    
+    def get_board_frame(self):
+        return self._board_frame
+    
+    def get_board_frames(self):
+        return self._frames
 
     def run(self):
         self._root.mainloop()
@@ -217,8 +223,8 @@ class PlayerActor(DogPlayerInterface):
     def post_message(self, message):
         # Obtém a hora atual
         now = datetime.datetime.now()
-        timestamp = now.strftime(" [%H:%M:%S]  ")  # Formata a hora como [Hora:Minuto:Segundo]
-
+        # Formata a data e a hora como [AAAA-MM-DD HH:MM:SS]
+        timestamp = now.strftime("[%Y-%m-%d %H:%M:%S] ")  # Adiciona a data completa e o horário
         self._message_box.config(state=tk.NORMAL)
         # Insere o texto com o horário atual e usando a tag 'center' que foi ajustada para left
         self._message_box.insert(tk.END, timestamp + message + "\n")
@@ -240,21 +246,15 @@ class PlayerActor(DogPlayerInterface):
         Atualiza o estado da GUI após processamento da lógica do jogo
         """
         coordinates = []
+        symbol_to_color = {"X": "red", "O": "blue", "-": "gray"}
+
+        winner = self._ultimate_ttt.get_value()
+        color = symbol_to_color.get(winner, "white")
+        self._board_frame.config(bg=color)
 
         for x in range(SIZE_OF_BOARD):
             for y in range(SIZE_OF_BOARD):
                 coordinates.append(Coordinate(x, y))
-
-        winner = self._ultimate_ttt.get_value()
-
-        if winner == "X":
-            self._board_frame.config(bg="red")
-        elif winner == "O":
-            self._board_frame.config(bg="blue")
-        elif winner == "-":
-            self._board_frame.config(bg="gray")
-        else:  # Corrige a cor quando se reseta o jogo?
-            self._board_frame.config(bg="white")
 
         for i in range(0, 9):
             u_x = coordinates[i].get_x()
@@ -267,16 +267,9 @@ class PlayerActor(DogPlayerInterface):
                 tic_tac_toes = self._ultimate_ttt.get_childs()
                 tic_tac_toe = tic_tac_toes[u_y][u_x]
 
-                local_winner = tic_tac_toe.get_value()
-
-                if local_winner == "X":
-                    self._frames[u_y][u_x].config(bg="red")
-                elif local_winner == "O":
-                    self._frames[u_y][u_x].config(bg="blue")
-                elif local_winner == "-":
-                    self._frames[u_y][u_x].config(bg="gray")
-                else:
-                    self._frames[u_y][u_x].config(bg="white")
+                winner = tic_tac_toe.get_value()
+                color = symbol_to_color.get(winner, "white")
+                self._frames[u_y][u_x].config(bg=color)
 
                 positions = tic_tac_toe.get_childs()
                 position = positions[ttt_y][ttt_x]
@@ -287,30 +280,25 @@ class PlayerActor(DogPlayerInterface):
                     symbol = ""
                 
                 button = self._buttons[u_y][u_x][ttt_y][ttt_x]
-                if symbol == "X":
-                    button.config(text=symbol, fg="red")
-                elif symbol == "O":
-                    button.config(text=symbol, fg="blue")
-                elif symbol == "-":
-                    button.config(text=symbol, fg="gray")
-                else:
-                    button.config(text=symbol, fg="black")
-
-        if self._local_player.get_is_turn():
-            self._local_player_frame.set_playing()
-            self._remote_player_frame.set_waiting()
-        elif self._remote_player.get_is_turn():
-            self._remote_player_frame.set_playing()
-            self._local_player_frame.set_waiting()
-        else:
-            self._remote_player_frame.set_waiting()
-            self._local_player_frame.set_waiting()
+                color = symbol_to_color.get(symbol, "black")
+                button.config(text=symbol, fg=color)
 
         # Gambiarra para atualizar sempre o nome do jogador caso termine a partida
         local_player_name = self._local_player.get_name()
         remote_player_name = self._remote_player.get_name()
         self._local_player_frame.set_player_name(local_player_name)
         self._remote_player_frame.set_player_name(remote_player_name)
+
+        self._remote_player_frame.set_waiting()
+        self._local_player_frame.set_waiting()
+
+        is_turn = self._local_player.get_is_turn()
+        if is_turn:
+            self._local_player_frame.set_playing()
+        
+        is_turn = self._remote_player.get_is_turn()
+        if is_turn:
+            self._remote_player_frame.set_playing()
 
     def connect_to_dog(self):
         player_name = simpledialog.askstring(title="Player identifcation", prompt="Qual o seu nome?")

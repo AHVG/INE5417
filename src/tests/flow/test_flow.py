@@ -184,6 +184,8 @@ class TestFlow(TKinterTestCase):
 
         self.run_round(plays)
         self.pump_events()
+        import time
+        time.sleep(5)
 
         self.local_actor.reset_game()
 
