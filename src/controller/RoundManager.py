@@ -101,6 +101,9 @@ class RoundManager:
             _, previous_ttt_position = last_move
 
             correct_ttt = self._ultimate_tic_tac_toe.get_childs()[previous_ttt_position.get_y()][previous_ttt_position.get_x()]
+            current_ttt = self._ultimate_tic_tac_toe.get_childs()[u_position.get_y()][u_position.get_x()]
+            current_position = current_ttt.get_childs()[ttt_position.get_y()][ttt_position.get_x()]
+            
 
             # Verifica se o ttt que o jogador deve jogar tem vencedor
             if not correct_ttt.get_value():
@@ -108,9 +111,6 @@ class RoundManager:
                 if u_position != previous_ttt_position:
                     return False
 
-            current_ttt = self._ultimate_tic_tac_toe.get_childs()[u_position.get_y()][u_position.get_x()]
-            current_position = current_ttt.get_childs()[ttt_position.get_y()][ttt_position.get_x()]
-            
             # Verificar se tem vencedor no ttt selecionado ou se a posição selecionada está ocupada
             if current_ttt.get_value() or current_position.get_value():
                 return False
