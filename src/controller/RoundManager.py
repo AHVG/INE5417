@@ -102,8 +102,7 @@ class RoundManager:
 
             correct_ttt = self._ultimate_tic_tac_toe.get_childs()[previous_ttt_position.get_y()][previous_ttt_position.get_x()]
             current_ttt = self._ultimate_tic_tac_toe.get_childs()[u_position.get_y()][u_position.get_x()]
-            current_position = current_ttt.get_childs()[ttt_position.get_y()][ttt_position.get_x()]
-            
+            current_position = current_ttt.get_childs()[ttt_position.get_y()][ttt_position.get_x()]    
 
             # Verifica se o ttt que o jogador deve jogar tem vencedor
             if not correct_ttt.get_value():
