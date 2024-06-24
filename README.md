@@ -12,6 +12,8 @@ Após configurado corretamente o ambiente virtual, agora é necessário baixar a
 
 `pip3 install -r requirements.txt`
 
-Com as dependências, falta iniciar o jogo
+Com as dependências, falta iniciar o jogo, estando em src:
 
-`python3 src/main.py`
+`python3 main.py`
+
+python versions: python 3.10, python 3.11 (OBS: Não quer dizer que em outras versões não funcione, mas apenas que seu funcionamento foi verificado para essas versões)
