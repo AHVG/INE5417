@@ -49,16 +49,18 @@ class TestFlow(TKinterTestCase):
                 self.local_actor.receive_move({"u": u_move, "ttt": ttt_move})
                 self.pump_events()
 
-    @patch('controller.RoundManager.messagebox.showinfo')
+            # from time import sleep
+            # sleep(1)
+
     @patch('view.PlayerActor.simpledialog.askstring')
     @patch('view.PlayerActor.DogActor')
-    def test_when_the_game_local_player_wins(self, mock_dog_actor, mock_askstring, mock_showinfo):
+    def test_when_the_game_local_player_wins(self, mock_dog_actor, mock_askstring):
 
         mock_askstring.return_value = "Local player"
 
         start_status = StartStatus("2", "A partida começou", [["123", "1", "1"], ["Remote player " + str(random.randint(0, 10000)), "2", "2"]], "123")
         mock_instance = mock_dog_actor.return_value
-        mock_instance.initialize.return_value = "Alo"
+        mock_instance.initialize.return_value = "Conectado ao Dog Server"
         mock_instance.start_match.return_value = start_status
 
         self.local_actor = PlayerActor()
@@ -100,16 +102,15 @@ class TestFlow(TKinterTestCase):
 
         self.local_actor.reset_game()
 
-    @patch('controller.RoundManager.messagebox.showinfo')
     @patch('view.PlayerActor.simpledialog.askstring')
     @patch('view.PlayerActor.DogActor')
-    def test_when_the_game_remote_player_wins(self, mock_dog_actor, mock_askstring, mock_showinfo):
+    def test_when_the_game_remote_player_wins(self, mock_dog_actor, mock_askstring):
         
         mock_askstring.return_value = "Local player"
 
         start_status = StartStatus("2", "A partida começou", [["123", "1", "1"], ["Remote player " + str(random.randint(0, 10000)), "2", "2"]], "123")
         mock_instance = mock_dog_actor.return_value
-        mock_instance.initialize.return_value = "Alo"
+        mock_instance.initialize.return_value = "Conectado ao Dog Server"
         mock_instance.start_match.return_value = start_status
 
         self.local_actor = PlayerActor()
@@ -152,16 +153,15 @@ class TestFlow(TKinterTestCase):
 
         self.local_actor.reset_game()
 
-    @patch('controller.RoundManager.messagebox.showinfo')
     @patch('view.PlayerActor.simpledialog.askstring')
     @patch('view.PlayerActor.DogActor')
-    def test_when_the_game_ends_in_a_draw(self, mock_dog_actor, mock_askstring, mock_showinfo):
+    def test_when_the_game_ends_in_a_draw(self, mock_dog_actor, mock_askstring):
 
         mock_askstring.return_value = "Local player"
 
         start_status = StartStatus("2", "A partida começou", [["123", "1", "1"], ["Remote player " + str(random.randint(0, 10000)), "2", "2"]], "123")
         mock_instance = mock_dog_actor.return_value
-        mock_instance.initialize.return_value = "Alo"
+        mock_instance.initialize.return_value = "Conectado ao Dog Server"
         mock_instance.start_match.return_value = start_status
 
         self.local_actor = PlayerActor()
@@ -187,16 +187,15 @@ class TestFlow(TKinterTestCase):
 
         self.local_actor.reset_game()
 
-    @patch('controller.RoundManager.messagebox.showinfo')
     @patch('view.PlayerActor.simpledialog.askstring')
     @patch('view.PlayerActor.DogActor')
-    def test_when_playing_more_than_once(self, mock_dog_actor, mock_askstring, mock_showinfo):
+    def test_when_playing_more_than_once(self, mock_dog_actor, mock_askstring):
         
         mock_askstring.return_value = "Local player"
 
         start_status = StartStatus("2", "A partida começou", [["123", "1", "1"], ["Remote player " + str(random.randint(0, 10000)), "2", "2"]], "123")
         mock_instance = mock_dog_actor.return_value
-        mock_instance.initialize.return_value = "Alo"
+        mock_instance.initialize.return_value = "Conectado ao Dog Server"
         mock_instance.start_match.return_value = start_status
 
         self.local_actor = PlayerActor()
@@ -212,7 +211,7 @@ class TestFlow(TKinterTestCase):
 
         start_status = StartStatus("2", "A partida começou", [["123", "1", "1"], ["Remote player " + str(random.randint(0, 10000)), "2", "2"]], "123")
         mock_instance = mock_dog_actor.return_value
-        mock_instance.initialize.return_value = "Alo"
+        mock_instance.initialize.return_value = "Conectado ao Dog Server"
         mock_instance.start_match.return_value = start_status
 
         plays, _ = generate_game()
@@ -224,7 +223,7 @@ class TestFlow(TKinterTestCase):
 
         start_status = StartStatus("2", "A partida começou", [["123", "1", "1"], ["Remote player " + str(random.randint(0, 10000)), "2", "2"]], "123")
         mock_instance = mock_dog_actor.return_value
-        mock_instance.initialize.return_value = "Alo"
+        mock_instance.initialize.return_value = "Conectado ao Dog Server"
         mock_instance.start_match.return_value = start_status
 
         plays, _ = generate_game()

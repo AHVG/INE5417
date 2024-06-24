@@ -1,6 +1,8 @@
 import tkinter as tk
+import datetime
 
-from tkinter import simpledialog, messagebox
+from functools import partial
+from tkinter import simpledialog, font
 
 from dog.dog_interface import DogPlayerInterface
 from dog.dog_actor import DogActor
@@ -17,7 +19,6 @@ from model.UltimateTicTacToe import UltimateTicTacToe
 from model.Player import Player
 from model.Board import Board
 
-from functools import partial
 
 
 class PlayerActor(DogPlayerInterface):
@@ -54,7 +55,7 @@ class PlayerActor(DogPlayerInterface):
         self._local_player: Player = Player("Jogador local", "X")
         self._remote_player: Player = Player("Jogador remoto", "O")
         self._dog_server: DogActor = DogActor()
-        self._round_manager: RoundManager = RoundManager(self._ultimate_ttt, self._local_player, self._remote_player, self._dog_server)
+        self._round_manager: RoundManager = RoundManager(self, self._ultimate_ttt, self._local_player, self._remote_player, self._dog_server)
         
         self._root = tk.Tk()
         self._root.title("Ultimate Tic Tac Toe")
@@ -62,9 +63,15 @@ class PlayerActor(DogPlayerInterface):
 
         self._player_frame = None
         self._board_frame = None
+        
         self._local_player_frame = None
         self._remote_player_frame = None
+
+        self._message_box_frame = None
+
         self._buttons = None
+        self._frames = None
+
         self.fill_main_window()
 
         self.connect_to_dog()
@@ -89,6 +96,12 @@ class PlayerActor(DogPlayerInterface):
 
     def get_remote_player_frame(self):
         return self._remote_player_frame
+    
+    def get_board_frame(self):
+        return self._board_frame
+    
+    def get_board_frames(self):
+        return self._frames
 
     def run(self):
         self._root.mainloop()
@@ -102,72 +115,147 @@ class PlayerActor(DogPlayerInterface):
 
     def build_player_status(self):
         self._player_frame: tk.Frame = tk.Frame(self._root)
-        self._player_frame.grid(row=0, column=0)
+        self._player_frame.grid(row=0, column=0, padx=(10, 0))
 
         self._local_player_frame = PlayerStatusFrame(self._player_frame, "Jogador local", "imgs/player_image.png", bg="white")
         self._local_player_frame.grid(column=0, row=0)
 
-        self._remote_player_frame = PlayerStatusFrame(self._player_frame, "Jogador remoto", "imgs/player_image.png", bg="white")
+        self._remote_player_frame = PlayerStatusFrame(self._player_frame, "", "imgs/player_image.png", bg="white")
         self._remote_player_frame.grid(column=0, row=1)
-
-    def build_tic_tac_toe(self, tic_tac_toe, frame, u_coordinate):
+    
+    def build_board(self, parent, board, level=1):
         buttons = []
+        frames = []
 
-        for k, line in enumerate(tic_tac_toe.get_childs()):
-            buttons_line = []
+        if board.get_childs():
+            big_frame = tk.Frame(parent, bg='black')
+            big_frame.grid(row=0, column=0, padx=10, pady=10)
 
-            for h, position in enumerate(line):
-                button = tk.Button(frame, text=position.get_value(), font=('Arial', 20), height=2, width=4,
-                                    bg='white', fg='gray', command=partial(self.on_click_board, u_coordinate, Coordinate(h, k)))
-                button.grid(row=k, column=h, sticky='nsew', padx=1, pady=1)
-                buttons_line.append(button)
-
-            buttons.append(buttons_line)
-
-        return buttons
-
-    def build_ultimate_tic_tac_toe(self):
-        self._board_frame: tk.Frame = tk.Frame(self._root, bg='white')
-        self._board_frame.grid(row=0, column=1, padx=50, pady=50)
-
-        self._buttons: list[list[list[list[tk.Button]]]] = []
-
-        for i, line in enumerate(self.get_ultimate_tic_tac_toe().get_childs()):
-            buttons_line = []
-
-            for j, tic_tac_toe in enumerate(line):
-
-                def change_bg(_, frame, color):
+            def change_bg(_, frame, color):
+                # Gambiarra para não trocar a cor de fundo quando alguém vence ou empata
+                if frame.cget('bg') in ("#dcdcdc", "white"):
                     frame.config(bg=color)
 
-                big_frame = tk.Frame(self._board_frame, bg='white', name=f'{i}x{j}')
-                big_frame.grid(row=i, column=j)
+            for i in range(3):
+                buttons_line = []
+                frames_line = []
+                for j in range(3):
+                    frame = tk.Frame(big_frame, bg='white')
+                    frame.grid(row=i, column=j)
+                    frame.bind("<Enter>", partial(change_bg, frame=frame, color="#dcdcdc"))
+                    frame.bind("<Leave>", partial(change_bg, frame=frame, color="white"))
 
-                frame = tk.Frame(big_frame, bg='white')
-                frame.grid(row=0, column=0, padx=4, pady=4)
+                    button_or_buttons = self.build_board(frame, board.get_childs()[i][j], level + 1)
+                    
+                    buttons_line.append(button_or_buttons)
+                    frames_line.append(frame)
 
-                frame.bind("<Enter>", partial(change_bg, frame=frame, color="gray"))
-                frame.bind("<Leave>", partial(change_bg, frame=frame, color="white"))
+                buttons.append(buttons_line)
+                frames.append(frames_line)
 
-                buttons_line.append(self.build_tic_tac_toe(tic_tac_toe, frame, Coordinate(j, i)))
-            
-            self._buttons.append(buttons_line)
+            frames[0][0].grid_configure(padx=(0, 2), pady=(0, 2))
+            frames[0][2].grid_configure(padx=(2, 0), pady=(0, 2))
+            frames[2][0].grid_configure(padx=(0, 2), pady=(2, 0))
+            frames[2][2].grid_configure(padx=(2, 0), pady=(2, 0))
 
-    def fill_main_window(self):
-        self.build_menu()
-        self.build_player_status()
-        self.build_ultimate_tic_tac_toe()
+            frames[1][1].grid_configure(padx=(2, 2), pady=(2, 2))
 
-    def update_gui(self) -> None:
-        """
-        Atualiza o estado da GUI após processamento da lógica do jogo
-        """
+            frames[0][1].grid_configure(padx=(2, 2), pady=(0, 2))
+            frames[1][0].grid_configure(padx=(0, 2), pady=(2, 2))
+            frames[1][2].grid_configure(padx=(2, 0), pady=(2, 2))
+            frames[2][1].grid_configure(padx=(2, 2), pady=(2, 0))
+
+            if level == 1:
+                self._frames = frames
+
+            return buttons
+
+        button = tk.Button(parent, text=board.get_value(), font=('Arial', 20), height=2, width=4,
+                            bg='white', fg='black', relief='flat', bd=0, highlightthickness=0)
+        button.grid(row=0, column=0)
+        return button
+
+    def add_command_to_buttons(self, buttons):
         coordinates = []
 
         for x in range(SIZE_OF_BOARD):
             for y in range(SIZE_OF_BOARD):
                 coordinates.append(Coordinate(x, y))
         
+        for u_ttt in coordinates:
+            u_ttt_x = u_ttt.get_x()
+            u_ttt_y = u_ttt.get_y()
+
+            for ttt in coordinates:
+                ttt_x = ttt.get_x()
+                ttt_y = ttt.get_y()
+                buttons[u_ttt_y][u_ttt_x][ttt_y][ttt_x].config(command=partial(self.on_click_board, u_ttt, ttt))
+
+    def build_ultimate_tic_tac_toe(self):
+        self._board_frame: tk.Frame = tk.Frame(self._root, bg='white')
+        self._board_frame.grid(row=0, column=1, padx=50, pady=20)
+        self._buttons = self.build_board(self._board_frame, self._ultimate_ttt)
+        self.add_command_to_buttons(self._buttons)
+
+    def build_message_box(self):
+        # Cria um Frame para a caixa de mensagens
+        self._message_box_frame = tk.Frame(self._root, bg="white")
+        self._message_box_frame.grid(row=1, column=0, columnspan=2, sticky="ew")
+
+        # Configura a fonte
+        custom_font = font.Font(family="Helvetica", size=20)  # Define a fonte com tamanho maior
+
+        # Configura o widget Text para exibir as mensagens com a fonte customizada
+        self._message_box = tk.Text(self._message_box_frame, height=3, width=50,
+                                    borderwidth=1, highlightthickness=1,
+                                    font=custom_font)  # Aplica a fonte
+        scrollbar = tk.Scrollbar(self._message_box_frame, command=self._message_box.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)  # Coloca a Scrollbar à direita do Text
+        self._message_box.pack(side=tk.LEFT, expand=True, fill=tk.BOTH, padx=5, pady=5)
+
+        # Configura o Text para usar a Scrollbar
+        self._message_box.config(yscrollcommand=scrollbar.set)
+
+        # Configura a tag para centralizar o texto
+        self._message_box.tag_configure('center', justify='center')
+        self._message_box.config(state=tk.DISABLED)
+
+    def post_message(self, message):
+        # Obtém a hora atual
+        now = datetime.datetime.now()
+        # Formata a data e a hora como [AAAA-MM-DD HH:MM:SS]
+        timestamp = now.strftime("[%Y-%m-%d %H:%M:%S] ")  # Adiciona a data completa e o horário
+        self._message_box.config(state=tk.NORMAL)
+        # Insere o texto com o horário atual e usando a tag 'center' que foi ajustada para left
+        self._message_box.insert(tk.END, timestamp + message + "\n")
+
+        # Move a visualização para uma linha antes do final
+        end_line = int(self._message_box.index("end-1c").split(".")[0])  # Descobre o número da última linha
+        line_before_end = max(1, end_line - 1)  # Calcula uma linha antes do final, mas não menos que 1
+        self._message_box.see(f"{line_before_end}.0")  # Ajusta a visualização para essa linha
+        self._message_box.config(state=tk.DISABLED)
+
+    def fill_main_window(self):
+        self.build_menu()
+        self.build_player_status()
+        self.build_ultimate_tic_tac_toe()
+        self.build_message_box()
+
+    def update_gui(self) -> None:
+        """
+        Atualiza o estado da GUI após processamento da lógica do jogo
+        """
+        coordinates = []
+        symbol_to_color = {"X": "red", "O": "blue", "-": "gray"}
+
+        winner = self._ultimate_ttt.get_value()
+        color = symbol_to_color.get(winner, "white")
+        self._board_frame.config(bg=color)
+
+        for x in range(SIZE_OF_BOARD):
+            for y in range(SIZE_OF_BOARD):
+                coordinates.append(Coordinate(x, y))
+
         for i in range(0, 9):
             u_x = coordinates[i].get_x()
             u_y = coordinates[i].get_y()
@@ -179,6 +267,10 @@ class PlayerActor(DogPlayerInterface):
                 tic_tac_toes = self._ultimate_ttt.get_childs()
                 tic_tac_toe = tic_tac_toes[u_y][u_x]
 
+                winner = tic_tac_toe.get_value()
+                color = symbol_to_color.get(winner, "white")
+                self._frames[u_y][u_x].config(bg=color)
+
                 positions = tic_tac_toe.get_childs()
                 position = positions[ttt_y][ttt_x]
 
@@ -188,18 +280,30 @@ class PlayerActor(DogPlayerInterface):
                     symbol = ""
                 
                 button = self._buttons[u_y][u_x][ttt_y][ttt_x]
-                button.config(text=symbol)
-        
+                color = symbol_to_color.get(symbol, "black")
+                button.config(text=symbol, fg=color)
+
         # Gambiarra para atualizar sempre o nome do jogador caso termine a partida
         local_player_name = self._local_player.get_name()
         remote_player_name = self._remote_player.get_name()
         self._local_player_frame.set_player_name(local_player_name)
         self._remote_player_frame.set_player_name(remote_player_name)
 
+        self._remote_player_frame.set_waiting()
+        self._local_player_frame.set_waiting()
+
+        is_turn = self._local_player.get_is_turn()
+        if is_turn:
+            self._local_player_frame.set_playing()
+        
+        is_turn = self._remote_player.get_is_turn()
+        if is_turn:
+            self._remote_player_frame.set_playing()
+
     def connect_to_dog(self):
         player_name = simpledialog.askstring(title="Player identifcation", prompt="Qual o seu nome?")
         message = self._dog_server.initialize(player_name, self)
-        messagebox.showinfo(message=message)
+        self.post_message(message)
 
         self._local_player.set_name(player_name)
         self.update_gui()

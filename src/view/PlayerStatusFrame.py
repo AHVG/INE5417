@@ -19,8 +19,18 @@ class PlayerStatusFrame(tk.Frame):
         self.label_player_name = tk.Label(self, text=player_name, bg="white")
         self.label_player_name.grid(column=0, row=1)
 
+        self.config(highlightbackground="white", highlightthickness=2)
+
     def get_player_name(self):
         return self.label_player_name.cget("text")
 
     def set_player_name(self, new_name):
         self.label_player_name.config(text=new_name)
+
+    def set_waiting(self):
+        # Adiciona uma borda ao redor do frame
+        self.config(highlightbackground="white", highlightthickness=2)
+
+    def set_playing(self):
+        # Remove a borda do frame
+        self.config(highlightbackground="black", highlightthickness=2)
